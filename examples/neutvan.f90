@@ -175,7 +175,6 @@ PROGRAM neutvan
   ENDIF
  
   CALL RELEASE_ARRAYS(SOL,OPTS)
-   
-  STOP
+
 END PROGRAM neutvan
 

@@ -190,6 +190,5 @@ PROGRAM laserex
   ENDIF
  
   CALL RELEASE_ARRAYS(SOL,OPTS)
-   
-  STOP
+
 END PROGRAM laserex

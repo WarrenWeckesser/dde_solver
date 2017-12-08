@@ -175,6 +175,5 @@ PROGRAM ex4p7
      SOL%FLAG
 
   ENDIF
-  
-  STOP
+
 END PROGRAM ex4p7

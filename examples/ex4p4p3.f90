@@ -185,6 +185,5 @@ PROGRAM ex4p4p3
      SOL%FLAG
  
   ENDIF
-  
-  STOP
+
 END PROGRAM ex4p4p3

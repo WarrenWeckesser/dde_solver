@@ -135,5 +135,4 @@ PROGRAM ex4p4p1
   ! Integration statistics:
   CALL PRINT_STATS(SOL)
 
-  STOP
 END PROGRAM ex4p4p1

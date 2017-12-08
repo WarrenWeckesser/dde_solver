@@ -203,5 +203,4 @@ PROGRAM volinteq
 
   ENDIF
 
-  STOP
 END PROGRAM volinteq

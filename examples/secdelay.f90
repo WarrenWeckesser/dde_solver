@@ -182,6 +182,5 @@ PROGRAM secdelay
      PRINT *,' Abnormal return from DDE_SOLVER with FLAG = ',&
      SOL%FLAG
   ENDIF
-  
-  STOP
+
 END PROGRAM secdelay

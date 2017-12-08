@@ -360,5 +360,4 @@ PROGRAM infection
   PRINT *,' >> [tI1,I1,tI2,I2,tI3,I3,tI4,I4] = infectionIoft;'
   PRINT *,' '
 
-  STOP
 END PROGRAM infection
