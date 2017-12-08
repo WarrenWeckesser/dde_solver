@@ -22,7 +22,7 @@ except Windows) line endings.
 
 Major changes
 -------------
-o Use assumed-shape arrays in all interfaces.  (Old code will have to be updated to
+* Use assumed-shape arrays in all interfaces.  (Old code will have to be updated to
   match the new interfaces.)
-o Removed ODEAVG, and removed all the code in dde_solver_m.f90 related to averaging.
-o Added the function DDE_SOLVER_VERSION that returns the software version.
+* Removed ODEAVG, and removed all the code in dde_solver_m.f90 related to averaging.
+* Added the function DDE_SOLVER_VERSION that returns the software version.
