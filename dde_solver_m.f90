@@ -374,7 +374,8 @@ MODULE DDE_SOLVER_M
 
   ! .. Generic Interface Blocks ..
   INTERFACE DDE_SOLVER
-     MODULE PROCEDURE DKL_1, DKL_2, DKL_3, DKL_4, ODEAVG
+     !MODULE PROCEDURE DKL_1, DKL_2, DKL_3, DKL_4, ODEAVG
+     MODULE PROCEDURE DKL_1, DKL_2, DKL_3, DKL_4
   END INTERFACE
   ! ..
   ! .. Derived Type Declarations ..
@@ -421,7 +422,7 @@ MODULE DDE_SOLVER_M
   ! ..
   ! .. Local Scalars ..
   DOUBLE PRECISION, PRIVATE :: EFAC, FACDN, FACUP, GRTOL, KCFAC, &
-       MYTINIT, DELAVG, DELINC, MY_MAX_DELAY, TQLAST
+       MYTINIT, MY_MAX_DELAY, TQLAST
   DOUBLE PRECISION, PRIVATE :: REALMAX = HUGE(1D0)
   DOUBLE PRECISION, PRIVATE :: REMIN, RER, TOLFAC, U10, U13, U26, U65
   DOUBLE PRECISION, PRIVATE :: UROUND = EPSILON(1D0)
@@ -431,7 +432,7 @@ MODULE DDE_SOLVER_M
        JN, JP, LENTREE, LIW, LQUEUE, LTQUEUE, MAXCOR, MAXTRY, MYMAX_EVENTS, &
        MYMAX_STEPS, MYMETHOD, MYN, MYNGUSER, MYNJUMPS, MYNTHIT, MYQCOLS, &
        NFAILC, NFAILS, NFEVAL, NGEMAX, NGEVAL, NLAGS, NSIG, NSPAN, NSTEPS, &
-       ROOT_FUNCTIONS, AVG_TYPE, NEQN_USER, NLAGS_USER, MAVG, &
+       ROOT_FUNCTIONS, NEQN_USER, NLAGS_USER, &
        MY_TRIM_FREQUENCY, MIN_DROP, UNUM655, UNUM656, ERROR_FLAG
 
   ! Rootfining arrays will be incremented by this amount.
@@ -469,7 +470,7 @@ MODULE DDE_SOLVER_M
   ! ..
   ! .. Private Statements ..
   PRIVATE :: CD_BETA, CH_YINIT, DUMMY_CHANGE, DUMMY_GUSER, SOL_OUT, &
-       TRIM_GET_DUMMY
+       TRIM_GET_DUMMY, DUMMY_BETA, DUMMY_YINIT
   ! ..
   ! .. DDE_SOLVER version
   INTEGER, PRIVATE, PARAMETER :: VERSION_MAJOR=2, VERSION_MINOR=0, VERSION_POINT=0
@@ -1021,21 +1022,21 @@ CONTAINS
           IF (HAVE_TRIM_GET) THEN
              DONT_CALL_CHANGE = .FALSE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,CHANGE_FCN, &
-                  OUT_FCN,CD_BETA,HISTORY,TSPAN,NGUSER,USER_TRIM_GET)
+                  OUT_FCN,DUMMY_BETA,HISTORY,TSPAN,NGUSER,USER_TRIM_GET)
           ELSE
             DONT_CALL_CHANGE = .FALSE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,CHANGE_FCN, &
-                  OUT_FCN,CD_BETA,HISTORY,TSPAN,NGUSER,TRIM_GET_DUMMY)
+                  OUT_FCN,DUMMY_BETA,HISTORY,TSPAN,NGUSER,TRIM_GET_DUMMY)
           END IF
        ELSE
           IF (HAVE_TRIM_GET) THEN
              DONT_CALL_CHANGE = .FALSE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,CHANGE_FCN, &
-                  SOL_OUT,CD_BETA,HISTORY,TSPAN,NGUSER,USER_TRIM_GET)
+                  SOL_OUT,DUMMY_BETA,HISTORY,TSPAN,NGUSER,USER_TRIM_GET)
           ELSE
              DONT_CALL_CHANGE = .FALSE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,CHANGE_FCN, &
-                  SOL_OUT,CD_BETA,HISTORY,TSPAN,NGUSER,TRIM_GET_DUMMY)
+                  SOL_OUT,DUMMY_BETA,HISTORY,TSPAN,NGUSER,TRIM_GET_DUMMY)
           END IF
        END IF
     ELSE IF (HAVE_EVENT_FCN) THEN
@@ -1043,21 +1044,21 @@ CONTAINS
           IF (HAVE_TRIM_GET) THEN
              DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,DUMMY_CHANGE, &
-                  OUT_FCN,CD_BETA,HISTORY,TSPAN,NGUSER,USER_TRIM_GET)
+                  OUT_FCN,DUMMY_BETA,HISTORY,TSPAN,NGUSER,USER_TRIM_GET)
           ELSE
              DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,DUMMY_CHANGE, &
-                  OUT_FCN,CD_BETA,HISTORY,TSPAN,NGUSER,TRIM_GET_DUMMY)
+                  OUT_FCN,DUMMY_BETA,HISTORY,TSPAN,NGUSER,TRIM_GET_DUMMY)
           END IF
        ELSE
           IF (HAVE_TRIM_GET) THEN
              DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,DUMMY_CHANGE, &
-                  SOL_OUT,CD_BETA,HISTORY,TSPAN,NGUSER,USER_TRIM_GET)
+                  SOL_OUT,DUMMY_BETA,HISTORY,TSPAN,NGUSER,USER_TRIM_GET)
           ELSE
              DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,DUMMY_CHANGE, &
-                  SOL_OUT,CD_BETA,HISTORY,TSPAN,NGUSER,TRIM_GET_DUMMY)
+                  SOL_OUT,DUMMY_BETA,HISTORY,TSPAN,NGUSER,TRIM_GET_DUMMY)
           END IF
        END IF
     ELSE
@@ -1065,21 +1066,21 @@ CONTAINS
           IF (HAVE_TRIM_GET) THEN
              DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,DUMMY_GUSER,DUMMY_CHANGE, &
-                  OUT_FCN,CD_BETA,HISTORY,TSPAN,NGUSER,USER_TRIM_GET)
+                  OUT_FCN,DUMMY_BETA,HISTORY,TSPAN,NGUSER,USER_TRIM_GET)
           ELSE
              DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,DUMMY_GUSER,DUMMY_CHANGE, &
-                  OUT_FCN,CD_BETA,HISTORY,TSPAN,NGUSER,TRIM_GET_DUMMY)
+                  OUT_FCN,DUMMY_BETA,HISTORY,TSPAN,NGUSER,TRIM_GET_DUMMY)
           END IF
        ELSE
           IF (HAVE_TRIM_GET) THEN
              DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,DUMMY_GUSER,DUMMY_CHANGE, &
-                  SOL_OUT,CD_BETA,HISTORY,TSPAN,NGUSER,USER_TRIM_GET)
+                  SOL_OUT,DUMMY_BETA,HISTORY,TSPAN,NGUSER,USER_TRIM_GET)
           ELSE
              DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,DUMMY_GUSER,DUMMY_CHANGE, &
-                  SOL_OUT,CD_BETA,HISTORY,TSPAN,NGUSER,TRIM_GET_DUMMY)
+                  SOL_OUT,DUMMY_BETA,HISTORY,TSPAN,NGUSER,TRIM_GET_DUMMY)
           END IF
        END IF
     END IF
@@ -1359,21 +1360,21 @@ CONTAINS
           IF (HAVE_TRIM_GET) THEN
              DONT_CALL_CHANGE = .FALSE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,CHANGE_FCN, &
-                  OUT_FCN,BETA,CH_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
+                  OUT_FCN,BETA,DUMMY_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
           ELSE
              DONT_CALL_CHANGE = .FALSE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,CHANGE_FCN, &
-                  OUT_FCN,BETA,CH_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
+                  OUT_FCN,BETA,DUMMY_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
           END IF
        ELSE
           IF (HAVE_TRIM_GET) THEN
              DONT_CALL_CHANGE = .FALSE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,CHANGE_FCN, &
-                  SOL_OUT,BETA,CH_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
+                  SOL_OUT,BETA,DUMMY_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
           ELSE
              DONT_CALL_CHANGE = .FALSE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,CHANGE_FCN, &
-                  SOL_OUT,BETA,CH_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
+                  SOL_OUT,BETA,DUMMY_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
           END IF
        END IF
     ELSE IF (HAVE_EVENT_FCN) THEN
@@ -1381,21 +1382,21 @@ CONTAINS
           IF (HAVE_TRIM_GET) THEN
              DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,DUMMY_CHANGE, &
-                  OUT_FCN,BETA,CH_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
+                  OUT_FCN,BETA,DUMMY_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
           ELSE
              DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,DUMMY_CHANGE, &
-                  OUT_FCN,BETA,CH_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
+                  OUT_FCN,BETA,DUMMY_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
           END IF
        ELSE
           IF (HAVE_TRIM_GET) THEN
              DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,DUMMY_CHANGE, &
-                  SOL_OUT,BETA,CH_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
+                  SOL_OUT,BETA,DUMMY_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
           ELSE
              DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,DUMMY_CHANGE, &
-                  SOL_OUT,BETA,CH_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
+                  SOL_OUT,BETA,DUMMY_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
           END IF
        END IF
     ELSE
@@ -1403,21 +1404,21 @@ CONTAINS
           IF (HAVE_TRIM_GET) THEN
              DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,DUMMY_GUSER,DUMMY_CHANGE, &
-                  OUT_FCN,BETA,CH_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
+                  OUT_FCN,BETA,DUMMY_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
           ELSE
              DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,DUMMY_GUSER,DUMMY_CHANGE, &
-                  OUT_FCN,BETA,CH_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
+                  OUT_FCN,BETA,DUMMY_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
           END IF
        ELSE
           IF (HAVE_TRIM_GET) THEN
              DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,DUMMY_GUSER,DUMMY_CHANGE, &
-                  SOL_OUT,BETA,CH_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
+                  SOL_OUT,BETA,DUMMY_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
           ELSE
              DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,DUMMY_GUSER,DUMMY_CHANGE, &
-                  SOL_OUT,BETA,CH_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
+                  SOL_OUT,BETA,DUMMY_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
           END IF
        END IF
     END IF
@@ -1687,21 +1688,21 @@ CONTAINS
           IF (HAVE_TRIM_GET) THEN
              DONT_CALL_CHANGE = .FALSE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,CHANGE_FCN, &
-                  OUT_FCN,CD_BETA,CH_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
+                  OUT_FCN,DUMMY_BETA,DUMMY_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
           ELSE
              DONT_CALL_CHANGE = .FALSE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,CHANGE_FCN, &
-                  OUT_FCN,CD_BETA,CH_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
+                  OUT_FCN,DUMMY_BETA,DUMMY_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
           END IF
        ELSE
           IF (HAVE_TRIM_GET) THEN
              DONT_CALL_CHANGE = .FALSE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,CHANGE_FCN, &
-                  SOL_OUT,CD_BETA,CH_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
+                  SOL_OUT,DUMMY_BETA,DUMMY_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
           ELSE
              DONT_CALL_CHANGE = .FALSE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,CHANGE_FCN, &
-                  SOL_OUT,CD_BETA,CH_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
+                  SOL_OUT,DUMMY_BETA,DUMMY_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
           END IF
        END IF
     ELSE IF (HAVE_EVENT_FCN) THEN
@@ -1709,21 +1710,21 @@ CONTAINS
           IF (HAVE_TRIM_GET) THEN
               DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,DUMMY_CHANGE, &
-                  OUT_FCN,CD_BETA,CH_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
+                  OUT_FCN,DUMMY_BETA,DUMMY_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
           ELSE
              DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,DUMMY_CHANGE, &
-                  OUT_FCN,CD_BETA,CH_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
+                  OUT_FCN,DUMMY_BETA,DUMMY_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
           END IF
        ELSE
           IF (HAVE_TRIM_GET) THEN
              DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,DUMMY_CHANGE, &
-                  SOL_OUT,CD_BETA,CH_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
+                  SOL_OUT,DUMMY_BETA,DUMMY_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
           ELSE
              DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,EVENT_FCN,DUMMY_CHANGE, &
-                  SOL_OUT,CD_BETA,CH_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
+                  SOL_OUT,DUMMY_BETA,DUMMY_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
           END IF
        END IF
     ELSE
@@ -1731,21 +1732,21 @@ CONTAINS
           IF (HAVE_TRIM_GET) THEN
              DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,DUMMY_GUSER,DUMMY_CHANGE, &
-                  OUT_FCN,CD_BETA,CH_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
+                  OUT_FCN,DUMMY_BETA,DUMMY_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
           ELSE
              DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,DUMMY_GUSER,DUMMY_CHANGE, &
-                  OUT_FCN,CD_BETA,CH_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
+                  OUT_FCN,DUMMY_BETA,DUMMY_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
           END IF
        ELSE
           IF (HAVE_TRIM_GET) THEN
              DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,DUMMY_GUSER,DUMMY_CHANGE, &
-                  SOL_OUT,CD_BETA,CH_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
+                  SOL_OUT,DUMMY_BETA,DUMMY_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
           ELSE
              DONT_CALL_CHANGE = .TRUE.
              CALL DDE_DRV1(NEQN,NLAGS,OPTS,DDES,DUMMY_GUSER,DUMMY_CHANGE, &
-                  SOL_OUT,CD_BETA,CH_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
+                  SOL_OUT,DUMMY_BETA,DUMMY_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
           END IF
        END IF
     END IF
@@ -1853,513 +1854,22 @@ CONTAINS
   END FUNCTION DKL_4
   !____________________________________________________________________________
 
-  FUNCTION ODEAVG(AVG_OPT,DELAYS,NVAR,ODES,HISTORY,TSPAN,OPTIONS, &
-       EVENT_FCN,CHANGE_FCN,OUT_FCN,USER_TRIM_GET) RESULT (SOL)
-
-    ! To use this interface:
-
-    !     AVG_OPT is an array of two entries, [NAVG,KIND].  If NAVG = 1, y(t)
-    !     is averaged over an interval of length DELTA=DELAYS(1)>0; and if
-    !     NAVG = 2, a second average is computed. If KIND = 1, the moving
-    !     average is computed and if KIND = 2, the square of the RMS norm
-    !     of the solution is computed.
-    !     Summary: AVG_OPT =
-    !       <1,1> means the solution will be averaged one time
-    !             (once averaged solution)
-    !       <2,1> means the solution will be averaged two times
-    !             (twice averaged solution)
-    !       <1,2> means y^2(t) will be averaged one time
-    !             (RMS amplitude)
-    !       <2,2> means y^2(t) will be averaged two times
-    !             (once averaged RMS amplitude)
-
-    !     DELAYS = vector of length 1 containing the moving average
-    !              increment DELTA
-
-    !     ODES(T,Y,DY) = name of subroutine in which the ODE derivatives
-    !                    will be defined
-
-    !     HISTORY = vector containing the initial conditions
-
-    !     The remaining arguments have the same meaning as
-    !     in the DKL_* drivers.
-
-    !     *****Time shifted solutions are returned by ODEAVG*****
-    !     The solution that is returned for, say, TVAL was computed
-    !     at the time TVAL + DELINC where DELINC = DELTA/2 if one
-    !     average was performed; and DELINC = DELTA if two averages
-    !     were performed. DELINT is returned in the solution structure
-    !     field SOL%TSHIFT.
-
-    !     Example:
-    !     TSPAN(1) =    0 = initial time
-    !     TSPAN(2) = 1000 = final time
-    !     DELAVG = 25 = moving average increment
-    !     AVG_OPT = <1,1>
-    !     ODEAVG will return
-    !        SOL%T = TSPAN(1)+DELTA/2,...,TSPAN(2)-DELTA/2 = 12.5,...,987.5.
-    !     The corresponding once averaged solution values will have
-    !     been computed at the times TSPAN(1)+DELTA,...,TSPAN(2)=0,...1000.
-    !     Example:
-    !     TSPAN(1) =    0 = initial time
-    !     TSPAN(2) = 1000 = final time
-    !     DELAVG = 25 = moving average increment
-    !     AVG_OPT = <2,1>
-    !     ODEAVG will return
-    !        SOL%T = TSPAN(1),...,TSPAN(2)-DELAVG = 0,...,975.
-    !     The corresponding twice averaged solution values will have
-    !     been computed at the times DTSPAN(1)+DELAVG,...,TSPAN(2)=25,...,1000.
-
-    !     If you use the INTERPOLATION option and subsequently call
-    !     DDE_VAL to obtain the solution for times in an array TINT(*),
-    !     pass the values TINT(*)+SOL%TSHIFT to DDE_VAL to obtain
-    !     the solution corresponding to TINT(*).
-
-    ! .. Function Return Value ..
-    TYPE (DDE_SOL), TARGET :: SOL
-    ! ..
-    ! .. Structure Arguments ..
-    TYPE (DDE_OPTS), OPTIONAL :: OPTIONS
-    ! ..
-    ! .. Array Arguments ..
-    DOUBLE PRECISION, TARGET :: DELAYS(:), HISTORY(:)
-    DOUBLE PRECISION :: TSPAN(:)
-    INTEGER :: NVAR(:), AVG_OPT(:)
-    ! ..
-    ! .. Subroutine Arguments ..
-    OPTIONAL :: OUT_FCN, CHANGE_FCN, EVENT_FCN, USER_TRIM_GET
-    ! ..
-    INTERFACE
-       SUBROUTINE ODES(T,Y,DY)
-         DOUBLE PRECISION :: T
-         DOUBLE PRECISION, DIMENSION(:) :: Y,DY
-         INTENT(IN):: T,Y
-         INTENT(OUT) :: DY
-       END SUBROUTINE ODES
-    END INTERFACE
-    INTERFACE
-       SUBROUTINE CHANGE_FCN(NEVENT,TEVENT,YEVENT,DYEVENT,HINIT, &
-            DIRECTION,ISTERMINAL,QUIT)
-         INTEGER :: NEVENT
-         INTEGER, DIMENSION(:) :: DIRECTION
-         DOUBLE PRECISION :: TEVENT,HINIT
-         DOUBLE PRECISION, DIMENSION(:) :: YEVENT,DYEVENT
-         LOGICAL :: QUIT
-         LOGICAL, DIMENSION(:) :: ISTERMINAL
-         INTENT(IN) :: NEVENT,TEVENT
-         INTENT(INOUT) :: YEVENT,DYEVENT,HINIT,DIRECTION,ISTERMINAL,QUIT
-       END SUBROUTINE CHANGE_FCN
-    END INTERFACE
-    INTERFACE
-       SUBROUTINE EVENT_FCN(T,Y,DYDT,Z,G)
-         DOUBLE PRECISION :: T
-         DOUBLE PRECISION, DIMENSION(:) :: Y,DYDT
-         DOUBLE PRECISION, DIMENSION(:,:) :: Z
-         DOUBLE PRECISION, DIMENSION(:) :: G
-         INTENT(IN):: T,Y,DYDT,Z
-         INTENT(OUT) :: G
-       END SUBROUTINE EVENT_FCN
-    END INTERFACE
-    INTERFACE
-       SUBROUTINE OUT_FCN(T,Y,DY,N,NEVENT)
-         INTEGER :: N,NEVENT
-         DOUBLE PRECISION :: T
-         DOUBLE PRECISION, DIMENSION(:) :: Y,DY
-       END SUBROUTINE OUT_FCN
-    END INTERFACE
-   INTERFACE
-      SUBROUTINE USER_TRIM_GET
-      END SUBROUTINE USER_TRIM_GET
-   END INTERFACE
-    ! ..
-    ! .. Local Structures ..
-    TYPE (DDE_OPTS), TARGET :: OPTS
-    ! ..
-    ! .. Local Scalars ..
-    INTEGER :: I, IER, IFLAG, NEQN, NGUSER, NLAGS, NOUT, NPTS, &
-         KFIRST, NPTS_TEMP, MKIND, IQUEUE, IDROPM1, ISAVE
-    DOUBLE PRECISION :: TF_TEMP, T0_TEMP
-    DOUBLE PRECISION, ALLOCATABLE :: TEMP(:), YTEMP(:,:)
-    ! ..
-    ! .. Intrinsic Functions ..
-    INTRINSIC PRESENT, SIZE
-    ! ..
-    ! .. User subroutines ..
-    !   EXTERNAL ODES,OUT_FCN,CHANGE_FCN,EVENT_FCN,USER_TRIM_GET
-    ! ..
-    SOLIPOINT_IS_ALLOCATED = .FALSE.
-
-    SHIFTT = .TRUE.
-    SOL%SHIFT = SHIFTT
-
-    HAVE_TRIM_GET = PRESENT(USER_TRIM_GET)
-
-    IF (PRESENT(OPTIONS)) THEN
-       OPTS = OPTIONS
-    ELSE
-       OPTS = DDE_SET()
-    END IF
-
-    MAVG = AVG_OPT(1)
-    MKIND = AVG_OPT(2)
-    IF (MAVG<1 .OR. MAVG>2) THEN
-       PRINT *, ' You must input the number of averages, AVG_OPT(1).'
-       PRINT *, ' Legal values are 1 and 2.'
-       STOP
-    END IF
-    IF (MKIND<1 .OR. MKIND>2) THEN
-       PRINT *, ' You must input the kind of average, AVG_OPT(2).'
-       PRINT *, ' Legal values are 1 and 2.'
-       STOP
-    END IF
-    AVG_TYPE = MKIND
-    IF (MAVG==1) THEN
-       DELINC = 0.5D0 * DELAVG
-    ELSE
-       DELINC = DELAVG
-    END IF
-
-    IF (SIZE(NVAR)<1) THEN
-       PRINT *, ' You must input the number of equations, NVAR(1).'
-       STOP
-    ELSE
-       DELAVG = DELAYS(1)
-       DROPZ = .TRUE.
-       NEQN = NVAR(1)
-       NLAGS = 1
-       NEQN_USER = NEQN
-       NLAGS_USER = NLAGS
-    END IF
-
-    SOL%TSHIFT = DELINC
-    NEQN = (MAVG + 1) * NEQN
-    HAVE_EVENT_FCN = PRESENT(EVENT_FCN)
-    IF (HAVE_EVENT_FCN) THEN
-       IF (SIZE(NVAR)<3) THEN
-          PRINT *, ' You must input the number of event functions, NVAR(3).'
-          STOP
-       ELSE
-          NGUSER = NVAR(3)
-       END IF
-       ! Provide for 10 events.
-       ALLOCATE (SOL%IE(10),SOL%TE(10),SOL%YE(10,NEQN),STAT=IER)
-       MYIPOINT(15) = 1
-       MYIPOINT(10) = 1
-       MYIPOINT(11) = 1
-       CALL CHECK_STAT(IER,13)
-    ELSE
-       NGUSER = 0
-    END IF
-    SOL%NE = 0
-    CALL EXPAND_OPTS(NEQN,NGUSER,OPTS)
-
-    ! IF (ALLOCATED(YOLD)) THEN
-    !    DEALLOCATE(YOLD,STAT=IER)
-    !    CALL CHECK_STAT(IER,1204)
-    ! END IF
-    ! IF (OPTS%NEUTRAL) THEN
-    !    ALLOCATE(YOLD(2*NEQN),STAT=IER)
-    !    CALL CHECK_STAT(IER,1205)
-    ! ELSE
-    !    ALLOCATE(YOLD(NEQN),STAT=IER)
-    !    CALL CHECK_STAT(IER,1206)
-    !    PRINT *, ' YOLD has been allocated.'
-    ! END IF
-
-    ! The following was moved to DDE_DRV1.
-    ! YOLD(1:NVAR(1)) = HISTORY
-    HAVE_OUT_FCN = PRESENT(OUT_FCN)
-    NSPAN = SIZE(TSPAN)
-    IF (HAVE_OUT_FCN .AND. NSPAN>2) THEN
-       ! Change to output at every step.
-       TSPAN = (/ TSPAN(1), TSPAN(NSPAN) /)
-       NSPAN = 2
-    END IF
-    CALL CHECK_TSPAN(TSPAN,NOUT)
-    ALLOCATE (SOL%T(NOUT),SOL%Y(NOUT,NEQN),STAT=IER)
-    MYIPOINT(8) = 1
-    MYIPOINT(9) = 1
-    CALL CHECK_STAT(IER,14)
-    SOL%NPTS = 0
-    PASS_SOL => SOL
-    NULLIFY (PASS_DELAYS,PASS_HISTORY)
-    PASS_DELAYS => DELAYS
-    CONSTANT_DELAYS = .TRUE.
-    PASS_HISTORY => HISTORY
-    CONSTANT_HISTORY = .TRUE.
-    HAVE_OUT_FCN = PRESENT(OUT_FCN)
-    IF (PRESENT(CHANGE_FCN)) THEN
-       IF (HAVE_OUT_FCN) THEN
-          IF (HAVE_TRIM_GET) THEN
-             DONT_CALL_CHANGE = .FALSE.
-             CALL DDE_DRV1(NEQN,NLAGS,OPTS,ODES,EVENT_FCN,CHANGE_FCN, &
-                  OUT_FCN,CD_BETA,CH_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
-          ELSE
-             DONT_CALL_CHANGE = .FALSE.
-             CALL DDE_DRV1(NEQN,NLAGS,OPTS,ODES,EVENT_FCN,CHANGE_FCN, &
-                  OUT_FCN,CD_BETA,CH_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
-          END IF
-       ELSE
-          IF (HAVE_TRIM_GET) THEN
-             DONT_CALL_CHANGE = .FALSE.
-             CALL DDE_DRV1(NEQN,NLAGS,OPTS,ODES,EVENT_FCN,CHANGE_FCN, &
-                  SOL_OUT,CD_BETA,CH_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
-          ELSE
-             DONT_CALL_CHANGE = .FALSE.
-             CALL DDE_DRV1(NEQN,NLAGS,OPTS,ODES,EVENT_FCN,CHANGE_FCN, &
-                  SOL_OUT,CD_BETA,CH_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
-          END IF
-       END IF
-    ELSE IF (HAVE_EVENT_FCN) THEN
-       IF (HAVE_OUT_FCN) THEN
-          IF (HAVE_TRIM_GET) THEN
-             DONT_CALL_CHANGE = .TRUE.
-             CALL DDE_DRV1(NEQN,NLAGS,OPTS,ODES,EVENT_FCN,DUMMY_CHANGE, &
-                  OUT_FCN,CD_BETA,CH_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
-          ELSE
-             DONT_CALL_CHANGE = .TRUE.
-             CALL DDE_DRV1(NEQN,NLAGS,OPTS,ODES,EVENT_FCN,DUMMY_CHANGE, &
-                  OUT_FCN,CD_BETA,CH_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
-          END IF
-       ELSE
-          IF (HAVE_TRIM_GET) THEN
-             DONT_CALL_CHANGE = .TRUE.
-             CALL DDE_DRV1(NEQN,NLAGS,OPTS,ODES,EVENT_FCN,DUMMY_CHANGE, &
-                  SOL_OUT,CD_BETA,CH_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
-          ELSE
-             DONT_CALL_CHANGE = .TRUE.
-             CALL DDE_DRV1(NEQN,NLAGS,OPTS,ODES,EVENT_FCN,DUMMY_CHANGE, &
-                  SOL_OUT,CD_BETA,CH_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
-          END IF
-       END IF
-    ELSE
-       IF (HAVE_OUT_FCN) THEN
-          IF (HAVE_TRIM_GET) THEN
-             DONT_CALL_CHANGE = .TRUE.
-             CALL DDE_DRV1(NEQN,NLAGS,OPTS,ODES,DUMMY_GUSER,DUMMY_CHANGE, &
-                  OUT_FCN,CD_BETA,CH_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
-          ELSE
-             DONT_CALL_CHANGE = .TRUE.
-             CALL DDE_DRV1(NEQN,NLAGS,OPTS,ODES,DUMMY_GUSER,DUMMY_CHANGE, &
-                  OUT_FCN,CD_BETA,CH_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
-          END IF
-       ELSE
-          IF (HAVE_TRIM_GET) THEN
-             DONT_CALL_CHANGE = .TRUE.
-             CALL DDE_DRV1(NEQN,NLAGS,OPTS,ODES,DUMMY_GUSER,DUMMY_CHANGE, &
-                  SOL_OUT,CD_BETA,CH_YINIT,TSPAN,NGUSER,USER_TRIM_GET)
-          ELSE
-             DONT_CALL_CHANGE = .TRUE.
-             CALL DDE_DRV1(NEQN,NLAGS,OPTS,ODES,DUMMY_GUSER,DUMMY_CHANGE, &
-                  SOL_OUT,CD_BETA,CH_YINIT,TSPAN,NGUSER,TRIM_GET_DUMMY)
-          END IF
-       END IF
-    END IF
-
-    IFLAG = ERROR_FLAG
-
-    ! Generate an error message if the integration was not successful.
-    IF (IFLAG/=0) THEN
-       PRINT *, ' One or more errors occurred in ODEAVG.'
-    END IF
-
-    ! Save the necessary interpolation structure if necessary.
-    SOLIPOINT_IS_ALLOCATED = .FALSE.
-    IF (IFLAG==0 .AND. OPTS%INTERPOLATION) THEN
-       SOL%SHIFT = SHIFTT
-       ! Add the interpolation arrays to SOL.
-       ! Reset the dimensions of TQUEUE and QUEUE to return only
-       ! the portions of TQUEUE and QUEUE which were actually used
-       ! (okay to reset since the arrays are about to be deallocated).
-       IF (AVG_TYPE==0) THEN
-          LTQUEUE = MYIPOINT(2)
-          MYQCOLS = 10*LTQUEUE
-          MYIPOINT(1) = MYQCOLS
-          ALLOCATE (SOL%IPOINT(LIPOINT),SOL%YOFT(NEQN), &
-               SOL%QUEUE(NEQN,MYQCOLS), &
-               SOL%TQUEUE(0:LTQUEUE),STAT=IER)
-          CALL CHECK_STAT(IER,15)
-          SOLIPOINT_IS_ALLOCATED = .TRUE.
-          MYIPOINT(16) = 1
-          MYIPOINT(13) = 1
-          MYIPOINT(12) = 1
-          MYIPOINT(14) = 1
-          SOL%IPOINT(1:LIPOINT) = MYIPOINT(1:LIPOINT)
-          SOL%QUEUE(1:NEQN,1:MYQCOLS) = &
-               QUEUE(1:NEQN,1:MYQCOLS)
-          SOL%TQUEUE(0:LTQUEUE) = TQUEUE(0:LTQUEUE)
-       ELSE
-          !    Return only the most averaged solution.
-          LTQUEUE = MYIPOINT(2)
-          MYQCOLS = 10*LTQUEUE
-          MYIPOINT(1) = MYQCOLS
-          ALLOCATE (SOL%IPOINT(LIPOINT),SOL%YOFT(NEQN_USER), &
-               SOL%QUEUE(NEQN_USER,MYQCOLS), &
-               SOL%TQUEUE(0:LTQUEUE),STAT=IER)
-          CALL CHECK_STAT(IER,15)
-          SOLIPOINT_IS_ALLOCATED = .TRUE.
-          MYIPOINT(16) = 1
-          MYIPOINT(13) = 1
-          MYIPOINT(12) = 1
-          MYIPOINT(14) = 1
-          SOL%IPOINT(1:LIPOINT) = MYIPOINT(1:LIPOINT)
-          SOL%QUEUE(1:NEQN_USER,1:MYQCOLS) = &
-               QUEUE(NEQN-NEQN_USER+1:NEQN,1:MYQCOLS)
-          SOL%TQUEUE(0:LTQUEUE) = TQUEUE(0:LTQUEUE)
-       END IF
-    END IF
-
-    IF (HAVE_TRIM_GET) THEN
-       ! Write the remaining queue information.
-       IQUEUE = MYIPOINT(2)
-       DO I = 1, IQUEUE
-          ISAVE = I
-          IF (TQUEUE(I)>TQLAST) THEN
-
-             IF (DEBUG) THEN
-                WRITE(DBGUNIT,9999)
-                WRITE(DBGUNIT,9998)
-                9999 FORMAT(' About to call TRIM_SAVE following the')
-                9998 FORMAT(' completion of the integration.')
-             END IF
-
-             CALL TRIM_SAVE(I,IQUEUE)
-             CALL USER_TRIM_GET
-             GOTO 10
-          END IF
-       END DO
-10     CONTINUE
-
-       IF (DEBUG) THEN
-          IDROPM1 = IQUEUE - ISAVE + 1
-          WRITE(DBGUNIT,9997) TQUEUE(IQUEUE)
-          WRITE(DBGUNIT,9996) IDROPM1
-          9997 FORMAT(' TNEW = ', D20.10)
-          9996 FORMAT(' Dropped from end of queue = ', I10)
-       END IF
-
-       TQLAST = TQUEUE(IQUEUE)
-
-    END IF
-
-    ! Deallocate the remaining DDE_SOLVER arrays.
-    DEALLOCATE (QUEUE,TQUEUE,STAT=IER)
-    CALL CHECK_STAT(IER,16)
-
-    ! IF (ALLOCATED(YOLD)) THEN
-    !    DEALLOCATE(YOLD,STAT=IER)
-    !    CALL CHECK_STAT(IER,1250)
-    ! END IF
-
-    ! Derivative sign change array.
-    ! IF (AVG_TYPE /= 0) THEN
-    !    DO I = 1, NEQN_USER
-    !       IF (DYSIGNS(NEQN-NEQN_USER+I) /= 0) THEN
-    !          PRINT *, ' Component ', I , ' of the most averaged solution'
-    !          PRINT *, ' changed sign ', DYSIGNS(NEQN-NEQN_USER+I), ' times.'
-    !       END IF
-    !    END DO
-    !    DEALLOCATE (DYSIGNS,STAT=IER)
-    !    CALL CHECK_STAT(IER,4)
-    ! END IF
-
-    ! Trim solution structure for output.
-    CALL CONTRACT_SOL(PASS_SOL,NEQN)
-
-    ! Drop the solution before DELAVG and shift the
-    ! independent variable.
-
-    IF (SHIFTT .AND. (MAVG==1 .OR. MAVG==2)) THEN
-       NPTS = PASS_SOL%NPTS
-       T0_TEMP = PASS_SOL%T(1)
-       TF_TEMP = PASS_SOL%T(NPTS)
-       DO I = 1, NPTS
-          IF (MAVG==1 .AND. PASS_SOL%T(I)>PASS_SOL%T(1)+DELAVG) THEN
-             KFIRST = I - 1
-             GOTO 20
-          END IF
-          IF (MAVG==2 .AND. PASS_SOL%T(I)>PASS_SOL%T(1)+2.0D0*DELAVG) THEN
-             KFIRST = I - 1
-             GOTO 20
-          END IF
-       END DO
-       PRINT *, ' An error occurred in ODEAVG during the shift'
-       PRINT *, ' of the independent variable.'
-       RETURN
-20     CONTINUE
-       NPTS_TEMP = NPTS - (KFIRST-1)
-       IF (MAVG==2) THEN
-          DO I = 1, NPTS_TEMP
-             PASS_SOL%T(I) = PASS_SOL%T(KFIRST-1+I) - DELAVG
-          END DO
-       END IF
-       IF (MAVG==1) THEN
-          DO I = 1, NPTS_TEMP
-             PASS_SOL%T(I) = PASS_SOL%T(KFIRST-1+I) - 0.5D0*DELAVG
-          END DO
-       END IF
-       PASS_SOL%T(1) = MAX(T0_TEMP,PASS_SOL%T(1))
-       PASS_SOL%T(NPTS_TEMP) = MIN(TF_TEMP,PASS_SOL%T(NPTS_TEMP))
-       DO I = 1, NPTS_TEMP
-          PASS_SOL%Y(I,1:NEQN_USER) = PASS_SOL%Y(KFIRST-1+I,1:NEQN_USER)
-       END DO
-       ALLOCATE (TEMP(NPTS_TEMP),STAT=IER)
-       CALL CHECK_STAT(IER,38)
-       TEMP = PASS_SOL%T(1:NPTS_TEMP)
-       DEALLOCATE (PASS_SOL%T,STAT=IER)
-       CALL CHECK_STAT(IER,39)
-       ALLOCATE (PASS_SOL%T(NPTS_TEMP),STAT=IER)
-       MYIPOINT(8) = 1
-       CALL CHECK_STAT(IER,40)
-       PASS_SOL%T = TEMP
-       DEALLOCATE (TEMP,STAT=IER)
-       CALL CHECK_STAT(IER,41)
-       ALLOCATE (YTEMP(NPTS_TEMP,NEQN_USER),STAT=IER)
-       CALL CHECK_STAT(IER,42)
-       YTEMP = PASS_SOL%Y(1:NPTS_TEMP,1:NEQN_USER)
-       DEALLOCATE (PASS_SOL%Y,STAT=IER)
-       CALL CHECK_STAT(IER,43)
-       ALLOCATE (PASS_SOL%Y(NPTS_TEMP,NEQN_USER),STAT=IER)
-       MYIPOINT(9) = 1
-       PASS_SOL%Y = YTEMP
-       CALL CHECK_STAT(IER,44)
-       DEALLOCATE (YTEMP,STAT=IER)
-       CALL CHECK_STAT(IER,44)
-       PASS_SOL%NPTS = NPTS_TEMP
-    END IF
-
-    ALLOCATE (SOL%STATS(6),STAT=IER)
-    CALL CHECK_STAT(IER,3)
-    MYIPOINT(17) = 1
-    IF (SOLIPOINT_IS_ALLOCATED) THEN
-    ELSE
-       ALLOCATE (SOL%IPOINT(LIPOINT),STAT=IER)
-       CALL CHECK_STAT(IER,3)
-       SOLIPOINT_IS_ALLOCATED = .TRUE.
-       MYIPOINT(16) = 1
-    END IF
-    SOL%IPOINT(1:LIPOINT) = MYIPOINT(1:LIPOINT)
-    SOL%FLAG = IFLAG
-    SOL%STATS(1) = NSTEPS
-    SOL%STATS(2) = NFAILS
-    SOL%STATS(3) = NFEVAL
-    SOL%STATS(4) = NFAILC
-    SOL%STATS(5) = ARRAY_STORAGE
-    SOL%STATS(6) = ROOT_FUNCTIONS
-
-    MYIPOINT(1:LIPOINT) = 0
-
-    IF (ASSOCIATED(PASS_SOL)) NULLIFY(PASS_SOL)
-    IF (ASSOCIATED(PASS_DELAYS)) NULLIFY(PASS_DELAYS)
-    IF (ASSOCIATED(PASS_HISTORY)) NULLIFY(PASS_HISTORY)
-
-    RETURN
-  END FUNCTION ODEAVG
-  !____________________________________________________________________________
-
   !**********END FUNCTIONS FOR GENERIC DDE_SOLVER**************
 
   !**********BEGIN PRIVATE AUXILIARY SUBROUTINES***************
+
+  SUBROUTINE DUMMY_BETA(T,Y,BVAL)
+     DOUBLE PRECISION, INTENT(IN) :: T
+     DOUBLE PRECISION, INTENT(IN) :: Y(:)
+     DOUBLE PRECISION, INTENT(OUT) :: BVAL(:)
+     RETURN
+  END SUBROUTINE DUMMY_BETA
+
+  SUBROUTINE DUMMY_YINIT(T,Y)
+     DOUBLE PRECISION, INTENT(IN) :: T
+     DOUBLE PRECISION, INTENT(OUT) :: Y(:)
+     RETURN
+  END SUBROUTINE DUMMY_YINIT
 
   SUBROUTINE DUMMY_CHANGE(NEVENT,TEVENT,YEVENT,DYEVENT,HINIT,DIRECTION, &
        ISTERMINAL,QUIT)
@@ -2373,6 +1883,8 @@ CONTAINS
     DOUBLE PRECISION :: DYEVENT(:), YEVENT(:)
     INTEGER :: DIRECTION(:)
     LOGICAL :: ISTERMINAL(:)
+    INTENT(IN) :: NEVENT, TEVENT
+    INTENT(INOUT) :: YEVENT,DYEVENT,HINIT,DIRECTION,ISTERMINAL,QUIT
     ! ..
     ! Get rid of some compiler warning messages about unused variables
     GETRIDOF = .FALSE.
@@ -2384,7 +1896,7 @@ CONTAINS
        A = DYEVENT(1)
        A = HINIT
        A = DIRECTION(1)
-       NEVENT = I
+       !NEVENT = I
        HINIT = A
     END IF
 
@@ -2422,6 +1934,7 @@ CONTAINS
     RETURN
   END SUBROUTINE TRIM_GET_DUMMY
   !____________________________________________________________________________
+
   SUBROUTINE CD_BETA(T,BVAL,NLAGS)
 
     ! .. Scalar Arguments ..
@@ -2457,7 +1970,8 @@ CONTAINS
     INTEGER :: NEQN, NEVENT
     ! ..
     ! .. Array Arguments ..
-    DOUBLE PRECISION :: DY(NEQN), Y(NEQN)
+    !DOUBLE PRECISION :: DY(NEQN), Y(NEQN)
+    DOUBLE PRECISION :: DY(:), Y(:)
     ! ..
     ! .. Local Scalars ..
     INTEGER :: NE, NPTS
@@ -2704,33 +2218,18 @@ CONTAINS
     DEALLOCATE (TEMP,STAT=IER)
     CALL CHECK_STAT(IER,41)
 
-    IF (AVG_TYPE==0) THEN
-       ALLOCATE (YTEMP(NPTS,COLS),STAT=IER)
-       CALL CHECK_STAT(IER,42)
-       YTEMP = PASS_SOL%Y(1:NPTS,:)
-       DEALLOCATE (PASS_SOL%Y,STAT=IER)
-       CALL CHECK_STAT(IER,43)
-       ALLOCATE (PASS_SOL%Y(NPTS,COLS),STAT=IER)
-       CALL CHECK_STAT(IER,43)
-       MYIPOINT(9) = 1
-       PASS_SOL%Y = YTEMP
-       CALL CHECK_STAT(IER,44)
-       DEALLOCATE (YTEMP,STAT=IER)
-       CALL CHECK_STAT(IER,44)
-    ELSE
-       ! Return only the most averaged solution.
-       ALLOCATE (YTEMP(NPTS,NEQN_USER),STAT=IER)
-       CALL CHECK_STAT(IER,42)
-       YTEMP(1:NPTS,1:NEQN_USER) = PASS_SOL%Y(1:NPTS,NEQN-NEQN_USER+1:NEQN)
-       DEALLOCATE (PASS_SOL%Y,STAT=IER)
-       CALL CHECK_STAT(IER,43)
-       ALLOCATE (PASS_SOL%Y(NPTS,NEQN_USER),STAT=IER)
-       CALL CHECK_STAT(IER,44)
-       MYIPOINT(9) = 1
-       PASS_SOL%Y = YTEMP
-       DEALLOCATE (YTEMP,STAT=IER)
-       CALL CHECK_STAT(IER,44)
-    END IF
+    ALLOCATE (YTEMP(NPTS,COLS),STAT=IER)
+    CALL CHECK_STAT(IER,42)
+    YTEMP = PASS_SOL%Y(1:NPTS,:)
+    DEALLOCATE (PASS_SOL%Y,STAT=IER)
+    CALL CHECK_STAT(IER,43)
+    ALLOCATE (PASS_SOL%Y(NPTS,COLS),STAT=IER)
+    CALL CHECK_STAT(IER,43)
+    MYIPOINT(9) = 1
+    PASS_SOL%Y = YTEMP
+    CALL CHECK_STAT(IER,44)
+    DEALLOCATE (YTEMP,STAT=IER)
+    CALL CHECK_STAT(IER,44)
 
     IF (NE>0) THEN
 
@@ -2801,10 +2300,8 @@ CONTAINS
        CALL CHECK_STAT(IER,57)
        OPTS%ABSERR(1) = AE
     ELSE IF (NAE/=NEQN) THEN
-       IF (AVG_TYPE==0) THEN
-          PRINT *, ' AE_VECTOR must have NEQN components.'
-          STOP
-       END IF
+       PRINT *, ' AE_VECTOR must have NEQN components.'
+       STOP
     END IF
     NRE = SIZE(OPTS%RELERR)
     IF (NRE==1) THEN
@@ -2816,10 +2313,8 @@ CONTAINS
        CALL CHECK_STAT(IER,57)
        OPTS%RELERR(1) = RE
     ELSE IF (NRE/=NEQN) THEN
-       IF (AVG_TYPE==0) THEN
-          PRINT *, ' RE_VECTOR must have NEQN components.'
-          STOP
-       END IF
+       PRINT *, ' RE_VECTOR must have NEQN components.'
+       STOP
     END IF
 
     IF (.NOT. ASSOCIATED(OPTS%ISTERMINAL)) THEN
@@ -2844,7 +2339,11 @@ CONTAINS
     ! Trim unneeded solution history when MAX_DELAY option is used.
 
     ! .. Subroutine Arguments ..
-    EXTERNAL TRIM_GET
+    !EXTERNAL TRIM_GET
+    INTERFACE
+       SUBROUTINE USER_TRIM_GET
+       END SUBROUTINE USER_TRIM_GET
+    END INTERFACE
     ! ..
     ! .. Local Scalars ..
     DOUBLE PRECISION :: TTEMP
@@ -3026,18 +2525,11 @@ CONTAINS
     ! Temporarily block the use of the MOVING_AVERAGE option.
     IF (PRESENT(MOVING_AVERAGE)) THEN
        PRINT *, ' This option is not yet activated.'
-       PRINT *, ' Please use ODEAVG instead.'
        STOP
     END IF
     ! ..
     ! Determine whether averaging will be used and if so which type.
     DROPZ = .FALSE.
-    AVG_TYPE = 0
-    MAVG = 0
-    IF (PRESENT(MOVING_AVERAGE)) THEN
-       IF (0<MOVING_AVERAGE .AND. MOVING_AVERAGE<3) &
-            AVG_TYPE = MOVING_AVERAGE
-    END IF
 
     IF (PRESENT(NEUTRAL)) THEN
        OPTS%NEUTRAL = NEUTRAL
@@ -3626,6 +3118,66 @@ CONTAINS
     ! ..
     ! .. Subroutine Arguments ..
     EXTERNAL BETA, CHANGE, DERIVS, GUSER, OUT_FCN, YINIT, TRIM_GET
+    INTERFACE
+       SUBROUTINE BETA(T,Y,BVAL)
+          DOUBLE PRECISION :: T
+          DOUBLE PRECISION, DIMENSION(:) :: Y
+          DOUBLE PRECISION, DIMENSION(:) :: BVAL
+          INTENT(IN):: T,Y
+          INTENT(OUT) :: BVAL
+       END SUBROUTINE BETA
+    END INTERFACE
+    INTERFACE
+       SUBROUTINE CHANGE(NEVENT,TEVENT,YEVENT,DYEVENT,HINIT, &
+            DIRECTION,ISTERMINAL,QUIT)
+         INTEGER :: NEVENT
+         INTEGER, DIMENSION(:) :: DIRECTION
+         DOUBLE PRECISION :: TEVENT,HINIT
+         DOUBLE PRECISION, DIMENSION(:) :: YEVENT,DYEVENT
+         LOGICAL :: QUIT
+         LOGICAL, DIMENSION(:) :: ISTERMINAL
+         INTENT(IN) :: NEVENT,TEVENT
+         INTENT(INOUT) :: YEVENT,DYEVENT,HINIT,DIRECTION,ISTERMINAL,QUIT
+       END SUBROUTINE CHANGE
+    END INTERFACE
+    INTERFACE
+       SUBROUTINE DERIVS(T,Y,Z,DY)
+          DOUBLE PRECISION :: T
+          DOUBLE PRECISION, DIMENSION(:) :: Y,DY
+          DOUBLE PRECISION, DIMENSION(:,:) :: Z
+          INTENT(IN):: T,Y,Z
+          INTENT(OUT) :: DY
+       END SUBROUTINE DERIVS
+    END INTERFACE
+    INTERFACE
+       SUBROUTINE GUSER(T,Y,DYDT,Z,G)
+         DOUBLE PRECISION :: T
+         DOUBLE PRECISION, DIMENSION(:) :: Y,DYDT
+         DOUBLE PRECISION, DIMENSION(:,:) :: Z
+         DOUBLE PRECISION, DIMENSION(:) :: G
+         INTENT(IN):: T,Y,DYDT,Z
+         INTENT(OUT) :: G
+       END SUBROUTINE GUSER
+    END INTERFACE
+    INTERFACE
+       SUBROUTINE OUT_FCN(T,Y,DY,N,NEVENT)
+         INTEGER :: N,NEVENT
+         DOUBLE PRECISION :: T
+         DOUBLE PRECISION, DIMENSION(:) :: Y,DY
+       END SUBROUTINE OUT_FCN
+    END INTERFACE
+    INTERFACE
+       SUBROUTINE YINIT(T,Y)
+         DOUBLE PRECISION :: T
+         DOUBLE PRECISION, DIMENSION(:) :: Y
+         INTENT(IN):: T
+         INTENT(OUT) :: Y
+      END SUBROUTINE YINIT
+    END INTERFACE
+    INTERFACE
+       SUBROUTINE TRIM_GET
+       END SUBROUTINE TRIM_GET
+    END INTERFACE
     ! ..
     ! .. Local Scalars ..
     INTEGER :: I, IER, LG, LG_NEW, LIW_NEW, LQUEUE_NEW, LTQUEUE_NEW, QCOLS, &
@@ -3748,13 +3300,6 @@ CONTAINS
     PVARI(1:27) = 0
     PVARL(1:5) = .FALSE.
 
-    ! Derivative sign change array.
-    ! IF (AVG_TYPE /= 0) THEN
-    !    ALLOCATE(DYSIGNS(N),STAT=IER)
-    !    CALL CHECK_STAT(IER,76)
-    !    DYSIGNS(1:N) = 0
-    ! END IF
-
     ! Define the integration status flag.
     ! IFLAG = 0
 
@@ -3766,18 +3311,6 @@ CONTAINS
     CALL DDE_YINIT(TSPAN(1),YINIT)
     MYYOLD(1:NEQN_USER) = VTEMP3(1:NEQN_USER)
     Y0SAVE(1:NEQN_USER) = MYYOLD(1:NEQN_USER)
-
-    IF (AVG_TYPE /= 0) THEN
-       DO I = 1, MAVG
-          IF (AVG_TYPE==1) THEN
-             MYYOLD(I*NEQN_USER+1:(I+1)*NEQN_USER) = &
-                  MYYOLD(1:NEQN_USER)
-          ELSE
-             MYYOLD(I*NEQN_USER+1:(I+1)*NEQN_USER) = &
-                  MYYOLD(1:NEQN_USER)**2
-          END IF
-       END DO
-    END IF
 
     ! Load YOLD into the first slot of the queue for use until
     ! the first integration step has been completed.
@@ -4035,10 +3568,70 @@ CONTAINS
     INTEGER :: NSPAN
     ! ..
     ! .. Array Arguments ..
-    DOUBLE PRECISION :: TSPAN(*)
+    DOUBLE PRECISION :: TSPAN(:)
     ! ..
     ! .. Subroutine Arguments ..
     EXTERNAL BETA, CHANGE, DERIVS, GUSER, OUT_FCN, YINIT, TRIM_GET
+    INTERFACE
+       SUBROUTINE BETA(T,Y,BVAL)
+          DOUBLE PRECISION :: T
+          DOUBLE PRECISION, DIMENSION(:) :: Y
+          DOUBLE PRECISION, DIMENSION(:) :: BVAL
+          INTENT(IN):: T,Y
+          INTENT(OUT) :: BVAL
+       END SUBROUTINE BETA
+    END INTERFACE
+    INTERFACE
+       SUBROUTINE CHANGE(NEVENT,TEVENT,YEVENT,DYEVENT,HINIT, &
+            DIRECTION,ISTERMINAL,QUIT)
+         INTEGER :: NEVENT
+         INTEGER, DIMENSION(:) :: DIRECTION
+         DOUBLE PRECISION :: TEVENT,HINIT
+         DOUBLE PRECISION, DIMENSION(:) :: YEVENT,DYEVENT
+         LOGICAL :: QUIT
+         LOGICAL, DIMENSION(:) :: ISTERMINAL
+         INTENT(IN) :: NEVENT,TEVENT
+         INTENT(INOUT) :: YEVENT,DYEVENT,HINIT,DIRECTION,ISTERMINAL,QUIT
+       END SUBROUTINE CHANGE
+    END INTERFACE
+    INTERFACE
+       SUBROUTINE DERIVS(T,Y,Z,DY)
+          DOUBLE PRECISION :: T
+          DOUBLE PRECISION, DIMENSION(:) :: Y,DY
+          DOUBLE PRECISION, DIMENSION(:,:) :: Z
+          INTENT(IN):: T,Y,Z
+          INTENT(OUT) :: DY
+       END SUBROUTINE DERIVS
+    END INTERFACE
+    INTERFACE
+       SUBROUTINE GUSER(T,Y,DYDT,Z,G)
+         DOUBLE PRECISION :: T
+         DOUBLE PRECISION, DIMENSION(:) :: Y,DYDT
+         DOUBLE PRECISION, DIMENSION(:,:) :: Z
+         DOUBLE PRECISION, DIMENSION(:) :: G
+         INTENT(IN):: T,Y,DYDT,Z
+         INTENT(OUT) :: G
+       END SUBROUTINE GUSER
+    END INTERFACE
+    INTERFACE
+       SUBROUTINE OUT_FCN(T,Y,DY,N,NEVENT)
+         INTEGER :: N,NEVENT
+         DOUBLE PRECISION :: T
+         DOUBLE PRECISION, DIMENSION(:) :: Y,DY
+       END SUBROUTINE OUT_FCN
+    END INTERFACE
+    INTERFACE
+       SUBROUTINE YINIT(T,Y)
+         DOUBLE PRECISION :: T
+         DOUBLE PRECISION, DIMENSION(:) :: Y
+         INTENT(IN):: T
+         INTENT(OUT) :: Y
+      END SUBROUTINE YINIT
+    END INTERFACE
+    INTERFACE
+       SUBROUTINE TRIM_GET
+       END SUBROUTINE TRIM_GET
+    END INTERFACE
     ! ..
     ! .. Local Scalars ..
     !DOUBLE PRECISION, SAVE :: BIG, HINIT, HINITM, HLEFT, HMAX, HNEXT, &
@@ -4162,22 +3755,9 @@ CONTAINS
        ! components.
        IA = SIZE(OPTIONS%ABSERR)
        IF (IA==1) THEN
-          IF (AVG_TYPE==0) THEN
-             MYABSER(1:N) = OPTIONS%ABSERR(1)
-          ELSE
-             MYABSER(1:MAVG*NEQN_USER) = HUNDRED*OPTIONS%ABSERR(1)
-             MYABSER(MAVG*NEQN_USER+1:N) = OPTIONS%ABSERR(1)
-          END IF
+          MYABSER(1:N) = OPTIONS%ABSERR(1)
        ELSE
-          IF (AVG_TYPE==0) THEN
-             MYABSER(1:N) = OPTIONS%ABSERR(1:N)
-          ELSE
-             DO I = 1, MAVG
-                MYABSER((I-1)*NEQN_USER+1:I*NEQN_USER) = &
-                     HUNDRED*OPTIONS%ABSERR(1:NEQN_USER)
-             END DO
-             MYABSER(MAVG*NEQN_USER+1:N) = OPTIONS%ABSERR(1:NEQN_USER)
-          END IF
+          MYABSER(1:N) = OPTIONS%ABSERR(1:N)
        END IF
 
        ! Define the relative error tolerances. The tolerances
@@ -4185,24 +3765,9 @@ CONTAINS
        ! for all but the most averaged components.
        IA = SIZE(OPTIONS%RELERR)
        IF (IA==1) THEN
-          IF (AVG_TYPE==0) THEN
-             MYRELER(1:N) = OPTIONS%RELERR(1)
-          ELSE
-             TEMP = MIN(TEN*OPTIONS%RELERR(1),PT05)
-             MYRELER(1:MAVG*NEQN_USER) = TEMP
-             MYRELER(MAVG*NEQN_USER+1:N) = OPTIONS%RELERR(1)
-          END IF
+          MYRELER(1:N) = OPTIONS%RELERR(1)
        ELSE
-          IF (AVG_TYPE==0) THEN
-             MYRELER(1:N) = OPTIONS%RELERR(1:N)
-          ELSE
-             DO I = 1, MAVG
-                DO J = 1, NEQN_USER
-                   MYRELER((I-1)*NEQN_USER+J) = MIN(TEN*OPTIONS%RELERR(J),PT05)
-                END DO
-             END DO
-          END IF
-          MYRELER(MAVG*NEQN_USER+1:N) = OPTIONS%RELERR(1:NEQN_USER)
+          MYRELER(1:N) = OPTIONS%RELERR(1:N)
        END IF
 
        AUTORF = OPTIONS%TRACK_DISCONTINUITIES
@@ -4300,7 +3865,7 @@ CONTAINS
              END IF
           END DO
        END IF
-       CALL DDE_DERV(TOLD,MYYOLD,MYDYOLD,DERIVS,DERIVS)
+       CALL DDE_DERV(TOLD,MYYOLD,MYDYOLD,DERIVS)
 
        ! Determine the direction of the integration.
        ! IDIR =  1 means integration to the right.
@@ -4419,8 +3984,8 @@ CONTAINS
           END DO
           MORDER = 6
           BIG = SQRT(REALMAX)
-          CALL DDE_HST1(DERIVS,TOLD,TOUT,MYYOLD,MYDYOLD,KMAT(1,1),MORDER, &
-               BIG,KMAT(1,2),KMAT(1,3),KMAT(1,4),KMAT(1,5),BETA,YINIT,IHFLAG, &
+          CALL DDE_HST1(DERIVS,TOLD,TOUT,MYYOLD,MYDYOLD,KMAT(:,1),MORDER, &
+               BIG,KMAT(:,2),KMAT(:,3),KMAT(:,4),KMAT(:,5),BETA,YINIT,IHFLAG, &
                HINIT)
           IF (IHFLAG/=0) GOTO 70
           ! Recalculate the initial delays.
@@ -4714,7 +4279,7 @@ CONTAINS
        IF (ABS(HLEFT)<=U26*MAX(ABS(TROOT),ABS(TFINAL))) THEN
           MYYOUT(1:N) = MYYROOT(1:N)
           MYDYOUT(1:N) = MYDYROOT(1:N)
-          ! CALL DDE_DERV(TFINAL,MYYOUT,MYDYOUT,DERIVS,DERIVS)
+          ! CALL DDE_DERV(TFINAL,MYYOUT,MYDYOUT,DERIVS)
           ! Make a print return for the final integration time.
           IF (NSPAN/=2) THEN
              NROOT = 0
@@ -4878,15 +4443,15 @@ CONTAINS
        ! Note: The error vector R will be used as scratch storage.
        IF (NLAGS>0) THEN
           CALL DDE_BETA(TROOT,MYYROOT,BETA)
-          CALL DDE_ZSET(TROOT,MYYROOT,HNEXT,YINIT,JNDEX,1,KMAT(1,1), &
-               KMAT(1,3),KMAT(1,4),KMAT(1,5),KMAT(1,6),KMAT(1,7),KMAT(1,8), &
-               KMAT(1,9),KMAT(1,10),TOLD,MYYOLD,ITERATE)
+          CALL DDE_ZSET(TROOT,MYYROOT,HNEXT,YINIT,JNDEX,1,KMAT(:,1), &
+               KMAT(:,3),KMAT(:,4),KMAT(:,5),KMAT(:,6),KMAT(:,7),KMAT(:,8), &
+               KMAT(:,9),KMAT(:,10),TOLD,MYYOLD,ITERATE)
           IF (JNDEX/=2) THEN
              INDEX = JNDEX
              GOTO 70
           END IF
        END IF
-       CALL DDE_DERV(TROOT,MYYROOT,MYDYROOT,DERIVS,DERIVS)
+       CALL DDE_DERV(TROOT,MYYROOT,MYDYROOT,DERIVS)
 
        ! Re-set the initial time.
        TOLD = TROOT
@@ -4947,7 +4512,7 @@ CONTAINS
        IF (ABS(HLEFT)<=U26*MAX(ABS(TNEW),ABS(TFINAL))) THEN
           MYYOUT(1:N) = MYYNEW(1:N)
           MYDYOUT(1:N) = MYDYNEW(1:N)
-          ! CALL DDE_DERV(TFINAL,MYYOUT,MYDYOUT,DERIVS,DERIVS)
+          ! CALL DDE_DERV(TFINAL,MYYOUT,MYDYOUT,DERIVS)
           ! Make a print return for the final integration time.
           IF (NSPAN/=2) THEN
              NROOT = 0
@@ -5162,6 +4727,46 @@ CONTAINS
     ! ..
     ! .. Subroutine Arguments ..
     EXTERNAL BETA, DERIVS, GUSER, YINIT, TRIM_GET
+    INTERFACE
+       SUBROUTINE BETA(T,Y,BVAL)
+          DOUBLE PRECISION :: T
+          DOUBLE PRECISION, DIMENSION(:) :: Y
+          DOUBLE PRECISION, DIMENSION(:) :: BVAL
+          INTENT(IN):: T,Y
+          INTENT(OUT) :: BVAL
+       END SUBROUTINE BETA
+    END INTERFACE
+    INTERFACE
+       SUBROUTINE DERIVS(T,Y,Z,DY)
+          DOUBLE PRECISION :: T
+          DOUBLE PRECISION, DIMENSION(:) :: Y,DY
+          DOUBLE PRECISION, DIMENSION(:,:) :: Z
+          INTENT(IN):: T,Y,Z
+          INTENT(OUT) :: DY
+       END SUBROUTINE DERIVS
+    END INTERFACE
+    INTERFACE
+       SUBROUTINE GUSER(T,Y,DYDT,Z,G)
+         DOUBLE PRECISION :: T
+         DOUBLE PRECISION, DIMENSION(:) :: Y,DYDT
+         DOUBLE PRECISION, DIMENSION(:,:) :: Z
+         DOUBLE PRECISION, DIMENSION(:) :: G
+         INTENT(IN):: T,Y,DYDT,Z
+         INTENT(OUT) :: G
+       END SUBROUTINE GUSER
+    END INTERFACE
+    INTERFACE
+       SUBROUTINE YINIT(T,Y)
+         DOUBLE PRECISION :: T
+         DOUBLE PRECISION, DIMENSION(:) :: Y
+         INTENT(IN):: T
+         INTENT(OUT) :: Y
+      END SUBROUTINE YINIT
+    END INTERFACE
+   INTERFACE
+      SUBROUTINE TRIM_GET
+      END SUBROUTINE TRIM_GET
+   END INTERFACE
     ! ..
     ! .. Local Scalars ..
     DOUBLE PRECISION :: H, HZSET, RATIO, TEMP
@@ -5206,9 +4811,9 @@ CONTAINS
        IF (NLAGS>0) CALL DDE_BETA(TOLD,MYYOLD,BETA)
        IMETH = 1
        ITERATE = .FALSE.
-       CALL DDE_ZSET(TOLD,MYYOLD,H,YINIT,INDEX,IMETH,KMAT(1,1),KMAT(1,3), &
-            KMAT(1,4),KMAT(1,5),KMAT(1,6),KMAT(1,7),KMAT(1,8),KMAT(1,9), &
-            KMAT(1,10),TOLD,MYYOLD,ITERATE)
+       CALL DDE_ZSET(TOLD,MYYOLD,H,YINIT,INDEX,IMETH,KMAT(:,1),KMAT(:,3), &
+            KMAT(:,4),KMAT(:,5),KMAT(:,6),KMAT(:,7),KMAT(:,8),KMAT(:,9), &
+            KMAT(:,10),TOLD,MYYOLD,ITERATE)
        ITERATE = .FALSE.
        IF (INDEX==-12 .OR. INDEX==-4) THEN
           PRINT *, ' An error occurred in the first call to'
@@ -5333,9 +4938,9 @@ CONTAINS
           IMETH = 1
           HZSET = TNEW - TOLD
           ITERATE = .FALSE.
-          CALL DDE_ZSET(TNEW,MYYNEW,HZSET,YINIT,INDEX,IMETH,KMAT(1,1), &
-               KMAT(1,3),KMAT(1,4),KMAT(1,5),KMAT(1,6),KMAT(1,7),KMAT(1,8), &
-               KMAT(1,9),KMAT(1,10),TOLD,MYYOLD,ITERATE)
+          CALL DDE_ZSET(TNEW,MYYNEW,HZSET,YINIT,INDEX,IMETH,KMAT(:,1), &
+               KMAT(:,3),KMAT(:,4),KMAT(:,5),KMAT(:,6),KMAT(:,7),KMAT(:,8), &
+               KMAT(:,9),KMAT(:,10),TOLD,MYYOLD,ITERATE)
           ITERATE = .FALSE.
           IF (INDEX==-12 .OR. INDEX==-4) THEN
              PRINT *, ' An error occurred in the third call to'
@@ -5353,9 +4958,9 @@ CONTAINS
        TVALS(2) = TNEW
        TVALS(3) = TOLD
        TVALS(4) = TNEW
-       IF (IFIRST==1) CALL DDE_GRT5(TVALS,MYYOLD,GUSER,H,INDEX,KMAT(1,1), &
-            KMAT(1,3),KMAT(1,4),KMAT(1,5),KMAT(1,6),KMAT(1,7),KMAT(1,8), &
-            KMAT(1,9),KMAT(1,10),BETA,TOLD,YINIT)
+       IF (IFIRST==1) CALL DDE_GRT5(TVALS,MYYOLD,GUSER,H,INDEX,KMAT(:,1), &
+            KMAT(:,3),KMAT(:,4),KMAT(:,5),KMAT(:,6),KMAT(:,7),KMAT(:,8), &
+            KMAT(:,9),KMAT(:,10),BETA,TOLD,YINIT)
        TROOT = TVALS(3)
        TROOT2 = TVALS(4)
 
@@ -5510,7 +5115,33 @@ CONTAINS
     LOGICAL, INTENT (OUT) :: CONVERGED
     ! ..
     ! .. Subroutine Arguments ..
-    EXTERNAL BETA, DERIVS, YINIT
+    !EXTERNAL BETA, DERIVS, YINIT
+    INTERFACE
+       SUBROUTINE BETA(T,Y,BVAL)
+         DOUBLE PRECISION :: T
+         DOUBLE PRECISION, DIMENSION(:) :: Y
+         DOUBLE PRECISION, DIMENSION(:) :: BVAL
+         INTENT(IN):: T,Y
+         INTENT(OUT) :: BVAL
+       END SUBROUTINE BETA
+    END INTERFACE
+    INTERFACE
+       SUBROUTINE DERIVS(T,Y,Z,DY)
+          DOUBLE PRECISION :: T
+          DOUBLE PRECISION, DIMENSION(:) :: Y,DY
+          DOUBLE PRECISION, DIMENSION(:,:) :: Z
+          INTENT(IN):: T,Y,Z
+          INTENT(OUT) :: DY
+       END SUBROUTINE DERIVS
+    END INTERFACE
+    INTERFACE
+       SUBROUTINE YINIT(T,Y)
+          DOUBLE PRECISION :: T
+          DOUBLE PRECISION, DIMENSION(:) :: Y
+          INTENT(IN):: T
+          INTENT(OUT) :: Y
+       END SUBROUTINE YINIT
+    END INTERFACE
     ! ..
     ! .. Local Scalars ..
     DOUBLE PRECISION :: HNM1, KDIFF, KFAC, KRATIO, TNM1, TR, TVAL, XDENOM, XNUMER
@@ -5569,29 +5200,29 @@ CONTAINS
           ! Most recent successful Y((6,10)) polynomial to extrapolate.
           IMETH = 1
           CALL DDE_ZSET(TVAL,MYYNEW,HNM1,YINIT,INDEX,IMETH, &
-               QUEUE(1,IBEGIN+2),QUEUE(1,IBEGIN+3),QUEUE(1,IBEGIN+4), &
-               QUEUE(1,IBEGIN+5),QUEUE(1,IBEGIN+6),QUEUE(1,IBEGIN+7), &
-               QUEUE(1,IBEGIN+8),QUEUE(1,IBEGIN+9),QUEUE(1,IBEGIN+10),TNM1, &
-               QUEUE(1,IBEGIN+1),ITERATE)
+               QUEUE(:,IBEGIN+2),QUEUE(:,IBEGIN+3),QUEUE(:,IBEGIN+4), &
+               QUEUE(:,IBEGIN+5),QUEUE(:,IBEGIN+6),QUEUE(:,IBEGIN+7), &
+               QUEUE(:,IBEGIN+8),QUEUE(:,IBEGIN+9),QUEUE(:,IBEGIN+10),TNM1, &
+               QUEUE(:,IBEGIN+1),ITERATE)
        END IF
        IF (ICOR==0 .AND. IFAM==0) THEN
           ! Use Euler extrapolations.
           IMETH = 9
-          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(1,1),KMAT(1,3), &
-               KMAT(1,4),KMAT(1,5),KMAT(1,6),KMAT(1,7),KMAT(1,8),KMAT(1,9), &
-               KMAT(1,10),TOLD,MYYOLD,ITERATE)
+          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(:,1),KMAT(:,3), &
+               KMAT(:,4),KMAT(:,5),KMAT(:,6),KMAT(:,7),KMAT(:,8),KMAT(:,9), &
+               KMAT(:,10),TOLD,MYYOLD,ITERATE)
        END IF
        IF (ICOR>0) THEN
           ! Most recent Y((6,10)) iterate to correct.
           IMETH = 1
-          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(1,1), &
-               KMAT(1,13),KMAT(1,14),KMAT(1,15),KMAT(1,16),KMAT(1,17), &
-               KMAT(1,18),KMAT(1,19),KMAT(1,20),TOLD,MYYOLD,ITERATE)
+          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(:,1), &
+               KMAT(:,13),KMAT(:,14),KMAT(:,15),KMAT(:,16),KMAT(:,17), &
+               KMAT(:,18),KMAT(:,19),KMAT(:,20),TOLD,MYYOLD,ITERATE)
           ITERATE = .FALSE.
        END IF
        IF (INDEX==-12 .OR. INDEX==-4) GOTO 40
     END IF
-    CALL DDE_DERV(TVAL,MYYNEW,KMAT(1,2),DERIVS,DERIVS)
+    CALL DDE_DERV(TVAL,MYYNEW,KMAT(:,2),DERIVS)
     NFEVAL = NFEVAL + 1
     IF (ICOR>0) THEN
        ! Force convergence of H*K1.
@@ -5618,29 +5249,29 @@ CONTAINS
           ! Most recent successful Y((6,10)) polynomial to extrapolate.
           IMETH = 1
           CALL DDE_ZSET(TVAL,MYYNEW,HNM1,YINIT,INDEX,IMETH, &
-               QUEUE(1,IBEGIN+2),QUEUE(1,IBEGIN+3),QUEUE(1,IBEGIN+4), &
-               QUEUE(1,IBEGIN+5),QUEUE(1,IBEGIN+6),QUEUE(1,IBEGIN+7), &
-               QUEUE(1,IBEGIN+8),QUEUE(1,IBEGIN+9),QUEUE(1,IBEGIN+10),TNM1, &
-               QUEUE(1,IBEGIN+1),ITERATE)
+               QUEUE(:,IBEGIN+2),QUEUE(:,IBEGIN+3),QUEUE(:,IBEGIN+4), &
+               QUEUE(:,IBEGIN+5),QUEUE(:,IBEGIN+6),QUEUE(:,IBEGIN+7), &
+               QUEUE(:,IBEGIN+8),QUEUE(:,IBEGIN+9),QUEUE(:,IBEGIN+10),TNM1, &
+               QUEUE(:,IBEGIN+1),ITERATE)
        END IF
        IF (ICOR==0 .AND. IFAM==0) THEN
           ! Use Euler extrapolations.
           IMETH = 9
-          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(1,1),KMAT(1,3), &
-               KMAT(1,4),KMAT(1,5),KMAT(1,6),KMAT(1,7),KMAT(1,8),KMAT(1,9), &
-               KMAT(1,10),TOLD,MYYOLD,ITERATE)
+          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(:,1),KMAT(:,3), &
+               KMAT(:,4),KMAT(:,5),KMAT(:,6),KMAT(:,7),KMAT(:,8),KMAT(:,9), &
+               KMAT(:,10),TOLD,MYYOLD,ITERATE)
        END IF
        IF (ICOR>0) THEN
           ! Most recent Y((6,10)) iterate to correct.
           IMETH = 1
-          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(1,1), &
-               KMAT(1,13),KMAT(1,14),KMAT(1,15),KMAT(1,16),KMAT(1,17), &
-               KMAT(1,18),KMAT(1,19),KMAT(1,20),TOLD,MYYOLD,ITERATE)
+          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(:,1), &
+               KMAT(:,13),KMAT(:,14),KMAT(:,15),KMAT(:,16),KMAT(:,17), &
+               KMAT(:,18),KMAT(:,19),KMAT(:,20),TOLD,MYYOLD,ITERATE)
           ITERATE = .FALSE.
        END IF
        IF (INDEX==-12 .OR. INDEX==-4) GOTO 40
     END IF
-    CALL DDE_DERV(TVAL,MYYNEW,KMAT(1,3),DERIVS,DERIVS)
+    CALL DDE_DERV(TVAL,MYYNEW,KMAT(:,3),DERIVS)
     NFEVAL = NFEVAL + 1
     IF (ICOR>0) THEN
        ! Force convergence of H*K2.
@@ -5665,29 +5296,29 @@ CONTAINS
           ! Most recent successful Y((6,10)) polynomial to extrapolate.
           IMETH = 1
           CALL DDE_ZSET(TVAL,MYYNEW,HNM1,YINIT,INDEX,IMETH, &
-               QUEUE(1,IBEGIN+2),QUEUE(1,IBEGIN+3),QUEUE(1,IBEGIN+4), &
-               QUEUE(1,IBEGIN+5),QUEUE(1,IBEGIN+6),QUEUE(1,IBEGIN+7), &
-               QUEUE(1,IBEGIN+8),QUEUE(1,IBEGIN+9),QUEUE(1,IBEGIN+10),TNM1, &
-               QUEUE(1,IBEGIN+1),ITERATE)
+               QUEUE(:,IBEGIN+2),QUEUE(:,IBEGIN+3),QUEUE(:,IBEGIN+4), &
+               QUEUE(:,IBEGIN+5),QUEUE(:,IBEGIN+6),QUEUE(:,IBEGIN+7), &
+               QUEUE(:,IBEGIN+8),QUEUE(:,IBEGIN+9),QUEUE(:,IBEGIN+10),TNM1, &
+               QUEUE(:,IBEGIN+1),ITERATE)
        END IF
        IF (ICOR==0 .AND. IFAM==0) THEN
           ! Use Euler extrapolations.
           IMETH = 9
-          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(1,1),KMAT(1,3), &
-               KMAT(1,4),KMAT(1,5),KMAT(1,6),KMAT(1,7),KMAT(1,8),KMAT(1,9), &
-               KMAT(1,10),TOLD,MYYOLD,ITERATE)
+          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(:,1),KMAT(:,3), &
+               KMAT(:,4),KMAT(:,5),KMAT(:,6),KMAT(:,7),KMAT(:,8),KMAT(:,9), &
+               KMAT(:,10),TOLD,MYYOLD,ITERATE)
        END IF
        IF (ICOR>0) THEN
           ! Most recent Y((6,10)) iterate to correct.
           IMETH = 1
-          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(1,1), &
-               KMAT(1,13),KMAT(1,14),KMAT(1,15),KMAT(1,16),KMAT(1,17), &
-               KMAT(1,18),KMAT(1,19),KMAT(1,20),TOLD,MYYOLD,ITERATE)
+          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(:,1), &
+               KMAT(:,13),KMAT(:,14),KMAT(:,15),KMAT(:,16),KMAT(:,17), &
+               KMAT(:,18),KMAT(:,19),KMAT(:,20),TOLD,MYYOLD,ITERATE)
           ITERATE = .FALSE.
        END IF
        IF (INDEX==-12 .OR. INDEX==-4) GOTO 40
     END IF
-    CALL DDE_DERV(TVAL,MYYNEW,KMAT(1,4),DERIVS,DERIVS)
+    CALL DDE_DERV(TVAL,MYYNEW,KMAT(:,4),DERIVS)
     NFEVAL = NFEVAL + 1
     IF (ICOR>0) THEN
        ! Force convergence of H*K3.
@@ -5712,29 +5343,29 @@ CONTAINS
           ! Most recent successful Y((6,10)) polynomial to extrapolate.
           IMETH = 1
           CALL DDE_ZSET(TVAL,MYYNEW,HNM1,YINIT,INDEX,IMETH, &
-               QUEUE(1,IBEGIN+2),QUEUE(1,IBEGIN+3),QUEUE(1,IBEGIN+4), &
-               QUEUE(1,IBEGIN+5),QUEUE(1,IBEGIN+6),QUEUE(1,IBEGIN+7), &
-               QUEUE(1,IBEGIN+8),QUEUE(1,IBEGIN+9),QUEUE(1,IBEGIN+10),TNM1, &
-               QUEUE(1,IBEGIN+1),ITERATE)
+               QUEUE(:,IBEGIN+2),QUEUE(:,IBEGIN+3),QUEUE(:,IBEGIN+4), &
+               QUEUE(:,IBEGIN+5),QUEUE(:,IBEGIN+6),QUEUE(:,IBEGIN+7), &
+               QUEUE(:,IBEGIN+8),QUEUE(:,IBEGIN+9),QUEUE(:,IBEGIN+10),TNM1, &
+               QUEUE(:,IBEGIN+1),ITERATE)
        END IF
        IF (ICOR==0 .AND. IFAM==0) THEN
           ! Use Euler extrapolations.
           IMETH = 9
-          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(1,1),KMAT(1,3), &
-               KMAT(1,4),KMAT(1,5),KMAT(1,6),KMAT(1,7),KMAT(1,8),KMAT(1,9), &
-               KMAT(1,10),TOLD,MYYOLD,ITERATE)
+          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(:,1),KMAT(:,3), &
+               KMAT(:,4),KMAT(:,5),KMAT(:,6),KMAT(:,7),KMAT(:,8),KMAT(:,9), &
+               KMAT(:,10),TOLD,MYYOLD,ITERATE)
        END IF
        IF (ICOR>0) THEN
           ! Most recent Y((6,10)) iterate to correct.
           IMETH = 1
-          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(1,1), &
-               KMAT(1,13),KMAT(1,14),KMAT(1,15),KMAT(1,16),KMAT(1,17), &
-               KMAT(1,18),KMAT(1,19),KMAT(1,20),TOLD,MYYOLD,ITERATE)
+          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(:,1), &
+               KMAT(:,13),KMAT(:,14),KMAT(:,15),KMAT(:,16),KMAT(:,17), &
+               KMAT(:,18),KMAT(:,19),KMAT(:,20),TOLD,MYYOLD,ITERATE)
           ITERATE = .FALSE.
        END IF
        IF (INDEX==-12 .OR. INDEX==-4) GOTO 40
     END IF
-    CALL DDE_DERV(TVAL,MYYNEW,KMAT(1,5),DERIVS,DERIVS)
+    CALL DDE_DERV(TVAL,MYYNEW,KMAT(:,5),DERIVS)
     NFEVAL = NFEVAL + 1
     IF (ICOR>0) THEN
        ! Force convergence of H*K4.
@@ -5761,29 +5392,29 @@ CONTAINS
           ! Most recent successful Y((6,10)) polynomial to extrapolate.
           IMETH = 1
           CALL DDE_ZSET(TVAL,MYYNEW,HNM1,YINIT,INDEX,IMETH, &
-               QUEUE(1,IBEGIN+2),QUEUE(1,IBEGIN+3),QUEUE(1,IBEGIN+4), &
-               QUEUE(1,IBEGIN+5),QUEUE(1,IBEGIN+6),QUEUE(1,IBEGIN+7), &
-               QUEUE(1,IBEGIN+8),QUEUE(1,IBEGIN+9),QUEUE(1,IBEGIN+10),TNM1, &
-               QUEUE(1,IBEGIN+1),ITERATE)
+               QUEUE(:,IBEGIN+2),QUEUE(:,IBEGIN+3),QUEUE(:,IBEGIN+4), &
+               QUEUE(:,IBEGIN+5),QUEUE(:,IBEGIN+6),QUEUE(:,IBEGIN+7), &
+               QUEUE(:,IBEGIN+8),QUEUE(:,IBEGIN+9),QUEUE(:,IBEGIN+10),TNM1, &
+               QUEUE(:,IBEGIN+1),ITERATE)
        END IF
        IF (ICOR==0 .AND. IFAM==0) THEN
           ! Use Euler extrapolations.
           IMETH = 9
-          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(1,1),KMAT(1,3), &
-               KMAT(1,4),KMAT(1,5),KMAT(1,6),KMAT(1,7),KMAT(1,8),KMAT(1,9), &
-               KMAT(1,10),TOLD,MYYOLD,ITERATE)
+          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(:,1),KMAT(:,3), &
+               KMAT(:,4),KMAT(:,5),KMAT(:,6),KMAT(:,7),KMAT(:,8),KMAT(:,9), &
+               KMAT(:,10),TOLD,MYYOLD,ITERATE)
        END IF
        IF (ICOR>0) THEN
           ! Most recent Y((6,10)) iterate to correct.
           IMETH = 1
-          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(1,1), &
-               KMAT(1,13),KMAT(1,14),KMAT(1,15),KMAT(1,16),KMAT(1,17), &
-               KMAT(1,18),KMAT(1,19),KMAT(1,20),TOLD,MYYOLD,ITERATE)
+          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(:,1), &
+               KMAT(:,13),KMAT(:,14),KMAT(:,15),KMAT(:,16),KMAT(:,17), &
+               KMAT(:,18),KMAT(:,19),KMAT(:,20),TOLD,MYYOLD,ITERATE)
           ITERATE = .FALSE.
        END IF
        IF (INDEX==-12 .OR. INDEX==-4) GOTO 40
     END IF
-    CALL DDE_DERV(TVAL,MYYNEW,KMAT(1,6),DERIVS,DERIVS)
+    CALL DDE_DERV(TVAL,MYYNEW,KMAT(:,6),DERIVS)
     NFEVAL = NFEVAL + 1
     IF (ICOR>0) THEN
        ! Force convergence of H*K5.
@@ -5810,29 +5441,29 @@ CONTAINS
           ! Most recent successful Y((6,10)) polynomial to extrapolate.
           IMETH = 1
           CALL DDE_ZSET(TVAL,MYYNEW,HNM1,YINIT,INDEX,IMETH, &
-               QUEUE(1,IBEGIN+2),QUEUE(1,IBEGIN+3),QUEUE(1,IBEGIN+4), &
-               QUEUE(1,IBEGIN+5),QUEUE(1,IBEGIN+6),QUEUE(1,IBEGIN+7), &
-               QUEUE(1,IBEGIN+8),QUEUE(1,IBEGIN+9),QUEUE(1,IBEGIN+10),TNM1, &
-               QUEUE(1,IBEGIN+1),ITERATE)
+               QUEUE(:,IBEGIN+2),QUEUE(:,IBEGIN+3),QUEUE(:,IBEGIN+4), &
+               QUEUE(:,IBEGIN+5),QUEUE(:,IBEGIN+6),QUEUE(:,IBEGIN+7), &
+               QUEUE(:,IBEGIN+8),QUEUE(:,IBEGIN+9),QUEUE(:,IBEGIN+10),TNM1, &
+               QUEUE(:,IBEGIN+1),ITERATE)
        END IF
        IF (ICOR==0 .AND. IFAM==0) THEN
           ! Use Euler extrapolations.
           IMETH = 9
-          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(1,1),KMAT(1,3), &
-               KMAT(1,4),KMAT(1,5),KMAT(1,6),KMAT(1,7),KMAT(1,8),KMAT(1,9), &
-               KMAT(1,10),TOLD,MYYOLD,ITERATE)
+          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(:,1),KMAT(:,3), &
+               KMAT(:,4),KMAT(:,5),KMAT(:,6),KMAT(:,7),KMAT(:,8),KMAT(:,9), &
+               KMAT(:,10),TOLD,MYYOLD,ITERATE)
        END IF
        IF (ICOR>0) THEN
           ! Most recent Y((6,10)) iterate to correct.
           IMETH = 1
-          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(1,1), &
-               KMAT(1,13),KMAT(1,14),KMAT(1,15),KMAT(1,16),KMAT(1,17), &
-               KMAT(1,18),KMAT(1,19),KMAT(1,20),TOLD,MYYOLD,ITERATE)
+          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(:,1), &
+               KMAT(:,13),KMAT(:,14),KMAT(:,15),KMAT(:,16),KMAT(:,17), &
+               KMAT(:,18),KMAT(:,19),KMAT(:,20),TOLD,MYYOLD,ITERATE)
           ITERATE = .FALSE.
        END IF
        IF (INDEX==-12 .OR. INDEX==-4) GOTO 40
     END IF
-    CALL DDE_DERV(TVAL,MYYNEW,KMAT(1,7),DERIVS,DERIVS)
+    CALL DDE_DERV(TVAL,MYYNEW,KMAT(:,7),DERIVS)
     NFEVAL = NFEVAL + 1
     IF (ICOR>0) THEN
        ! Force convergence of H*K6.
@@ -5859,29 +5490,29 @@ CONTAINS
           ! Most recent successful Y((6,10)) polynomial to extrapolate.
           IMETH = 1
           CALL DDE_ZSET(TVAL,MYYNEW,HNM1,YINIT,INDEX,IMETH, &
-               QUEUE(1,IBEGIN+2),QUEUE(1,IBEGIN+3),QUEUE(1,IBEGIN+4), &
-               QUEUE(1,IBEGIN+5),QUEUE(1,IBEGIN+6),QUEUE(1,IBEGIN+7), &
-               QUEUE(1,IBEGIN+8),QUEUE(1,IBEGIN+9),QUEUE(1,IBEGIN+10),TNM1, &
-               QUEUE(1,IBEGIN+1),ITERATE)
+               QUEUE(:,IBEGIN+2),QUEUE(:,IBEGIN+3),QUEUE(:,IBEGIN+4), &
+               QUEUE(:,IBEGIN+5),QUEUE(:,IBEGIN+6),QUEUE(:,IBEGIN+7), &
+               QUEUE(:,IBEGIN+8),QUEUE(:,IBEGIN+9),QUEUE(:,IBEGIN+10),TNM1, &
+               QUEUE(:,IBEGIN+1),ITERATE)
        END IF
        IF (ICOR==0 .AND. IFAM==0) THEN
           ! Use Euler extrapolations.
           IMETH = 9
-          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(1,1),KMAT(1,3), &
-               KMAT(1,4),KMAT(1,5),KMAT(1,6),KMAT(1,7),KMAT(1,8),KMAT(1,9), &
-               KMAT(1,10),TOLD,MYYOLD,ITERATE)
+          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(:,1),KMAT(:,3), &
+               KMAT(:,4),KMAT(:,5),KMAT(:,6),KMAT(:,7),KMAT(:,8),KMAT(:,9), &
+               KMAT(:,10),TOLD,MYYOLD,ITERATE)
        END IF
        IF (ICOR>0) THEN
           ! Most recent Y((6,10)) iterate to correct.
           IMETH = 1
-          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(1,1), &
-               KMAT(1,13),KMAT(1,14),KMAT(1,15),KMAT(1,16),KMAT(1,17), &
-               KMAT(1,18),KMAT(1,19),KMAT(1,20),TOLD,MYYOLD,ITERATE)
+          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(:,1), &
+               KMAT(:,13),KMAT(:,14),KMAT(:,15),KMAT(:,16),KMAT(:,17), &
+               KMAT(:,18),KMAT(:,19),KMAT(:,20),TOLD,MYYOLD,ITERATE)
           ITERATE = .FALSE.
        END IF
        IF (INDEX==-12 .OR. INDEX==-4) GOTO 40
     END IF
-    CALL DDE_DERV(TVAL,MYYNEW,KMAT(1,8),DERIVS,DERIVS)
+    CALL DDE_DERV(TVAL,MYYNEW,KMAT(:,8),DERIVS)
     NFEVAL = NFEVAL + 1
     IF (ICOR>0) THEN
        ! Force convergence of H*K7.
@@ -5908,29 +5539,29 @@ CONTAINS
           ! Most recent successful Y((6,10)) polynomial to extrapolate.
           IMETH = 1
           CALL DDE_ZSET(TVAL,MYYNEW,HNM1,YINIT,INDEX,IMETH, &
-               QUEUE(1,IBEGIN+2),QUEUE(1,IBEGIN+3),QUEUE(1,IBEGIN+4), &
-               QUEUE(1,IBEGIN+5),QUEUE(1,IBEGIN+6),QUEUE(1,IBEGIN+7), &
-               QUEUE(1,IBEGIN+8),QUEUE(1,IBEGIN+9),QUEUE(1,IBEGIN+10),TNM1, &
-               QUEUE(1,IBEGIN+1),ITERATE)
+               QUEUE(:,IBEGIN+2),QUEUE(:,IBEGIN+3),QUEUE(:,IBEGIN+4), &
+               QUEUE(:,IBEGIN+5),QUEUE(:,IBEGIN+6),QUEUE(:,IBEGIN+7), &
+               QUEUE(:,IBEGIN+8),QUEUE(:,IBEGIN+9),QUEUE(:,IBEGIN+10),TNM1, &
+               QUEUE(:,IBEGIN+1),ITERATE)
        END IF
        IF (ICOR==0 .AND. IFAM==0) THEN
           ! Use EULER extrapolations.
           IMETH = 9
-          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(1,1),KMAT(1,3), &
-               KMAT(1,4),KMAT(1,5),KMAT(1,6),KMAT(1,7),KMAT(1,8),KMAT(1,9), &
-               KMAT(1,10),TOLD,MYYOLD,ITERATE)
+          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(:,1),KMAT(:,3), &
+               KMAT(:,4),KMAT(:,5),KMAT(:,6),KMAT(:,7),KMAT(:,8),KMAT(:,9), &
+               KMAT(:,10),TOLD,MYYOLD,ITERATE)
        END IF
        IF (ICOR>0) THEN
           ! Most recent Y((6,10)) iterate to correct.
           IMETH = 1
-          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(1,1), &
-               KMAT(1,13),KMAT(1,14),KMAT(1,15),KMAT(1,16),KMAT(1,17), &
-               KMAT(1,18),KMAT(1,19),KMAT(1,20),TOLD,MYYOLD,ITERATE)
+          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(:,1), &
+               KMAT(:,13),KMAT(:,14),KMAT(:,15),KMAT(:,16),KMAT(:,17), &
+               KMAT(:,18),KMAT(:,19),KMAT(:,20),TOLD,MYYOLD,ITERATE)
           ITERATE = .FALSE.
        END IF
        IF (INDEX==-12 .OR. INDEX==-4) GOTO 40
     END IF
-    CALL DDE_DERV(TVAL,MYYNEW,KMAT(1,9),DERIVS,DERIVS)
+    CALL DDE_DERV(TVAL,MYYNEW,KMAT(:,9),DERIVS)
     NFEVAL = NFEVAL + 1
     IF (ICOR>0) THEN
        ! Force convergence of H*K8.
@@ -5956,29 +5587,29 @@ CONTAINS
           ! Most recent successful Y((6,10)) polynomial to extrapolate.
           IMETH = 1
           CALL DDE_ZSET(TVAL,MYYNEW,HNM1,YINIT,INDEX,IMETH, &
-               QUEUE(1,IBEGIN+2),QUEUE(1,IBEGIN+3),QUEUE(1,IBEGIN+4), &
-               QUEUE(1,IBEGIN+5),QUEUE(1,IBEGIN+6),QUEUE(1,IBEGIN+7), &
-               QUEUE(1,IBEGIN+8),QUEUE(1,IBEGIN+9),QUEUE(1,IBEGIN+10),TNM1, &
-               QUEUE(1,IBEGIN+1),ITERATE)
+               QUEUE(:,IBEGIN+2),QUEUE(:,IBEGIN+3),QUEUE(:,IBEGIN+4), &
+               QUEUE(:,IBEGIN+5),QUEUE(:,IBEGIN+6),QUEUE(:,IBEGIN+7), &
+               QUEUE(:,IBEGIN+8),QUEUE(:,IBEGIN+9),QUEUE(:,IBEGIN+10),TNM1, &
+               QUEUE(:,IBEGIN+1),ITERATE)
        END IF
        IF (ICOR==0 .AND. IFAM==0) THEN
           ! Use Euler extrapolations.
           IMETH = 9
-          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(1,1),KMAT(1,3), &
-               KMAT(1,4),KMAT(1,5),KMAT(1,6),KMAT(1,7),KMAT(1,8),KMAT(1,9), &
-               KMAT(1,10),TOLD,MYYOLD,ITERATE)
+          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(:,1),KMAT(:,3), &
+               KMAT(:,4),KMAT(:,5),KMAT(:,6),KMAT(:,7),KMAT(:,8),KMAT(:,9), &
+               KMAT(:,10),TOLD,MYYOLD,ITERATE)
        END IF
        IF (ICOR>0) THEN
           ! Most recent Y((6,10)) iterate to correct.
           IMETH = 1
-          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(1,1), &
-               KMAT(1,13),KMAT(1,14),KMAT(1,15),KMAT(1,16),KMAT(1,17), &
-               KMAT(1,18),KMAT(1,19),KMAT(1,20),TOLD,MYYOLD,ITERATE)
+          CALL DDE_ZSET(TVAL,MYYNEW,H,YINIT,INDEX,IMETH,KMAT(:,1), &
+               KMAT(:,13),KMAT(:,14),KMAT(:,15),KMAT(:,16),KMAT(:,17), &
+               KMAT(:,18),KMAT(:,19),KMAT(:,20),TOLD,MYYOLD,ITERATE)
           ITERATE = .FALSE.
        END IF
        IF (INDEX==-12 .OR. INDEX==-4) GOTO 40
     END IF
-    CALL DDE_DERV(TVAL,MYYNEW,KMAT(1,10),DERIVS,DERIVS)
+    CALL DDE_DERV(TVAL,MYYNEW,KMAT(:,10),DERIVS)
     NFEVAL = NFEVAL + 1
     IF (ICOR>0) THEN
        ! Force convergence of H*K9.
@@ -5995,8 +5626,8 @@ CONTAINS
 
     ! Calculate MYYNEW.
     TVAL = TOLD + H
-    CALL DDE_POLY(TOLD,MYYOLD,H,KMAT(1,1),KMAT(1,3),KMAT(1,4),KMAT(1,5), &
-         KMAT(1,6),KMAT(1,7),KMAT(1,8),KMAT(1,9),KMAT(1,10),MYYNEW, &
+    CALL DDE_POLY(TOLD,MYYOLD,H,KMAT(:,1),KMAT(:,3),KMAT(:,4),KMAT(:,5), &
+         KMAT(:,6),KMAT(:,7),KMAT(:,8),KMAT(:,9),KMAT(:,10),MYYNEW, &
          MYYNEW,TVAL,1)
 
     IF (ICOR>0) THEN
@@ -6172,12 +5803,38 @@ CONTAINS
     INTEGER, INTENT (IN) :: MORDER
     ! ..
     ! .. Array Arguments ..
-    DOUBLE PRECISION, INTENT (IN) :: ETOL(*)
-    DOUBLE PRECISION, INTENT (INOUT) :: PV(*), SF(*), SPY(*), Y(*), YP(*), &
-         YPRIME(*)
+    DOUBLE PRECISION, INTENT (IN) :: ETOL(:)
+    DOUBLE PRECISION, INTENT (INOUT) :: PV(:), SF(:), SPY(:), Y(:), YP(:), &
+         YPRIME(:)
     ! ..
     ! .. Subroutine Arguments ..
-    EXTERNAL BETA, DERIVS, YINIT
+    !EXTERNAL BETA, DERIVS, YINIT
+    INTERFACE
+       SUBROUTINE BETA(T,Y,BVAL)
+          DOUBLE PRECISION :: T
+          DOUBLE PRECISION, DIMENSION(:) :: Y
+          DOUBLE PRECISION, DIMENSION(:) :: BVAL
+          INTENT(IN):: T,Y
+          INTENT(OUT) :: BVAL
+       END SUBROUTINE BETA
+    END INTERFACE
+    INTERFACE
+       SUBROUTINE DERIVS(T,Y,Z,DY)
+          DOUBLE PRECISION :: T
+          DOUBLE PRECISION, DIMENSION(:) :: Y,DY
+          DOUBLE PRECISION, DIMENSION(:,:) :: Z
+          INTENT(IN):: T,Y,Z
+          INTENT(OUT) :: DY
+       END SUBROUTINE DERIVS
+    END INTERFACE
+    INTERFACE
+       SUBROUTINE YINIT(T,Y)
+         DOUBLE PRECISION :: T
+         DOUBLE PRECISION, DIMENSION(:) :: Y
+         INTENT(IN):: T
+         INTENT(OUT) :: Y
+      END SUBROUTINE YINIT
+    END INTERFACE
     ! ..
     ! .. Local Scalars ..
     DOUBLE PRECISION :: ABSDX, DA, DELF, DELY, DFDUB, DFDXB, DX, DY, FBND, &
@@ -6211,7 +5868,7 @@ CONTAINS
     ! YPRIME,YPRIME,YPRIME,YPRIME,YPRIME,IMETH)
     CALL DDE_HST2(Y,INDEX,YINIT,A,YPRIME)
     INDEX = 0
-    CALL DDE_DERV(TVAL,Y,SF,DERIVS,DERIVS)
+    CALL DDE_DERV(TVAL,Y,SF,DERIVS)
     YP(1:MYN) = SF(1:MYN) - YPRIME(1:MYN)
     DELF = MAXVAL(ABS(YP(1:MYN)))
     DFDXB = BIG
@@ -6278,7 +5935,7 @@ CONTAINS
           END DO
        END IF
        INDEX = 0
-       CALL DDE_DERV(A,PV,YP,DERIVS,DERIVS)
+       CALL DDE_DERV(A,PV,YP,DERIVS)
        PV(1:MYN) = YP(1:MYN) - YPRIME(1:MYN)
        GOTO 40
 30     CONTINUE
@@ -6292,7 +5949,7 @@ CONTAINS
        ! YPRIME,YPRIME,YPRIME,YPRIME,YPRIME,IMETH)
        CALL DDE_HST2(Y,INDEX,YINIT,A,YPRIME)
        INDEX = 0
-       CALL DDE_DERV(TVAL,PV,YP,DERIVS,DERIVS)
+       CALL DDE_DERV(TVAL,PV,YP,DERIVS)
        PV(1:MYN) = YP(1:MYN) - SF(1:MYN)
 40     CONTINUE
 
@@ -6413,10 +6070,18 @@ CONTAINS
     INTEGER, INTENT (OUT) :: INDEX
     ! ..
     ! .. Array Arguments ..
-    DOUBLE PRECISION, INTENT (IN) :: K0(*), YOLD(*)
+    DOUBLE PRECISION, INTENT (IN) :: K0(:), YOLD(:)
     ! ..
     ! .. Subroutine Arguments ..
-    EXTERNAL YINIT
+    !EXTERNAL YINIT
+    INTERFACE
+       SUBROUTINE YINIT(T,Y)
+         DOUBLE PRECISION :: T
+         DOUBLE PRECISION, DIMENSION(:) :: Y
+         INTENT(IN):: T
+         INTENT(OUT) :: Y
+      END SUBROUTINE YINIT
+    END INTERFACE
     ! ..
     ! .. Local Scalars ..
     DOUBLE PRECISION :: TVAL
@@ -6545,7 +6210,11 @@ CONTAINS
     DOUBLE PRECISION :: HTEMP
     INTEGER :: IBEGIN, IQUEUE, JQUEUE, NUMPT
 
-    EXTERNAL TRIM_GET
+    !EXTERNAL TRIM_GET
+    INTERFACE
+       SUBROUTINE TRIM_GET
+       END SUBROUTINE TRIM_GET
+    END INTERFACE
     ! ..
     ! IQUEUE points to the most recent addition to the queue.
     ! JQUEUE points to the oldest.
@@ -6857,21 +6526,12 @@ CONTAINS
        TR = XNUMER/XDENOM
        RATIO = MAX(RATIO,TR)
     END DO
-    ! IF (AVG_TYPE==0) THEN
     !   DO I = 1, MYN
     !     XNUMER = ABS(MYR(I))
     !     XDENOM = MYRELER(I)*ABS(MYYNEW(I)) + MYABSER(I)
     !     TR = XNUMER/XDENOM
     !     RATIO = MAX(RATIO,TR)
     !   END DO
-    ! ELSE
-    !   DO I = MYN-NEQN_USER+1, MYN
-    !     XNUMER = ABS(MYR(I))
-    !     XDENOM = MYRELER(I)*ABS(MYYNEW(I)) + MYABSER(I)
-    !     TR = XNUMER/XDENOM
-    !     RATIO = MAX(RATIO,TR)
-    !   END DO
-    ! END IF
 
     ! The following value of TOLFAC will decrease the next
     ! estimated step size by a factor of(1/15)**(1/6) and
@@ -6931,9 +6591,9 @@ CONTAINS
     INTEGER, INTENT (IN) :: ITASK
     ! ..
     ! .. Array Arguments ..
-    DOUBLE PRECISION, INTENT (OUT) :: DPVAL(*), PVAL(*)
-    DOUBLE PRECISION, INTENT (IN) :: K0(*), K2(*), K3(*), K4(*), K5(*), &
-         K6(*), K7(*), K8(*), K9(*), POLD(*)
+    DOUBLE PRECISION, INTENT (OUT) :: DPVAL(:), PVAL(:)
+    DOUBLE PRECISION, INTENT (IN) :: K0(:), K2(:), K3(:), K4(:), K5(:), &
+         K6(:), K7(:), K8(:), K9(:), POLD(:)
     ! ..
     ! .. Local Scalars ..
     DOUBLE PRECISION :: C
@@ -7218,7 +6878,7 @@ CONTAINS
   END SUBROUTINE DDE_WSET
   !____________________________________________________________________________
 
-  SUBROUTINE DDE_DERV(T,YSOL,DY,DERIVS,ERIVSDA)
+  SUBROUTINE DDE_DERV(T,YSOL,DY,DERIVS)
 
     ! DDE_DERV is an internal subroutine to calculate derivatives.
 
@@ -7226,132 +6886,32 @@ CONTAINS
     REAL (KIND(1D0)), INTENT (IN) :: T
     ! ..
     ! .. Array Arguments ..
-    REAL (KIND(1D0)), INTENT (INOUT) :: DY(*)
-    REAL (KIND(1D0)), INTENT (IN) :: YSOL(*)
-    ! ..
-    ! .. Local Scalars ..
-    INTEGER I,K
-    DOUBLE PRECISION :: Y,S,A,dS,dA,F0,TWOPOWS,TWOPOWA,Y0
-    LOGICAL STARTS
+    REAL (KIND(1D0)), INTENT (INOUT) :: DY(:)
+    REAL (KIND(1D0)), INTENT (IN) :: YSOL(:)
     ! ..
     ! .. Subroutine Arguments ..
-    EXTERNAL DERIVS, ERIVSDA
+    !EXTERNAL DERIVS
+    INTERFACE
+       SUBROUTINE DERIVS(T,Y,Z,DY)
+         DOUBLE PRECISION :: T
+         DOUBLE PRECISION, DIMENSION(:) :: Y,DY
+         DOUBLE PRECISION, DIMENSION(:,:) :: Z
+         INTENT(IN):: T,Y,Z
+         INTENT(OUT) :: DY
+       END SUBROUTINE DERIVS
+    END INTERFACE
     ! ..
     ! .. Intrinsic Functions ..
     INTRINSIC KIND
     ! ..
-    IF (AVG_TYPE==0) THEN
-       ! Averaging is not being performed.
-       IF (MYNEUTRAL) THEN
-          IF (NLAGS>0) THEN
-             ZANDD(1:MYN,1:NLAGS) = ZARRAY(1:MYN,1:NLAGS)
-             ZANDD(1:MYN,NLAGS+1:2*NLAGS) = DARRAY(1:MYN,1:NLAGS)
-          END IF
-          CALL DERIVS(T,YSOL,ZANDD,DY)
-       ELSE
-          CALL DERIVS(T,YSOL,ZARRAY,DY)
-       END IF
+    IF (MYNEUTRAL) THEN
+        IF (NLAGS>0) THEN
+            ZANDD(1:MYN,1:NLAGS) = ZARRAY(1:MYN,1:NLAGS)
+            ZANDD(1:MYN,NLAGS+1:2*NLAGS) = DARRAY(1:MYN,1:NLAGS)
+        END IF
+        CALL DERIVS(T,YSOL,ZANDD,DY)
     ELSE
-       ! Averaging is being performed.
-       IF (MYNEUTRAL) THEN
-          IF (NLAGS>1) THEN
-             ZANDD2(1:NEQN_USER,1:NLAGS_USER) = &
-                  ZARRAY(1:NEQN_USER,1:NLAGS_USER)
-             ZANDD2(1:NEQN_USER,NLAGS_USER+1:2*NLAGS_USER) = &
-                  DARRAY(1:NEQN_USER,1:NLAGS_USER)
-          END IF
-          IF (DROPZ) THEN
-             CALL ERIVSDA(T,YSOL(1:NEQN_USER),DY(1:NEQN_USER))
-          ELSE
-             CALL DERIVS(T,YSOL(1:NEQN_USER),ZANDD2,DY(1:NEQN_USER))
-          END IF
-       ELSE
-          ZARRAY2(1:NEQN_USER,1:NLAGS_USER) = &
-               ZARRAY(1:NEQN_USER,1:NLAGS_USER)
-          IF (DROPZ) THEN
-             CALL ERIVSDA(T,YSOL(1:NEQN_USER),DY(1:NEQN_USER))
-          ELSE
-             CALL DERIVS(T,YSOL(1:NEQN_USER),ZARRAY2,DY(1:NEQN_USER))
-          END IF
-       END IF
-       !
-       ! Save the initial derivatives for use below.
-       IF (ABS(T-MYTINIT)<=0.0D0) &
-            F0SAVE(1:NEQN_USER) = DY(1:NEQN_USER)
-
-       ! Now compute the derivatives for the averaged values.
-
-       STARTS = .TRUE.
-       IF (T>MYTINIT + DELAVG) STARTS = .FALSE.
-
-       TWOPOWS = 1.0D0
-       TWOPOWA = 0.5D0
-       DO I = 1, MAVG
-          TWOPOWS = 2.0D0 * TWOPOWS
-          TWOPOWA = 2.0D0 * TWOPOWA
-          DO K = 1, NEQN_USER
-             Y0 = Y0SAVE(K)
-             F0 = F0SAVE(K)
-             ! Solution averaging ...
-             IF (AVG_TYPE==1) THEN
-                Y = YSOL((I-1)*NEQN_USER+K)
-                S = YSOL(I*NEQN_USER+K)
-                ! If T is between MYTINIT and MYTINIT+DELAVG,
-                ! use the ODEs.
-                IF (STARTS) THEN
-                   IF (ABS(T-MYTINIT)<=0.0D0) THEN
-                      ! We need to handle the indeterminate
-                      ! form at MYTINIT.
-                      dS = F0 / TWOPOWS
-                   ELSE
-                      ! If T>MYTINIT evaluate the ODEs.
-                      dS = (Y - S) / (T - MYTINIT)
-                   END IF
-                ELSE
-                   ! If T is beyond MYTINIT+DELAVG, use the DDEs.
-                   ! s'(t) = (y(t) - y(t-delta)) / delta.
-                   dS = (Y - ZARRAY((I-1)*NEQN_USER+K,1)) / DELAVG
-                END IF
-                DY(I*NEQN_USER+K) = dS
-             END IF
-             ! RMS averaging ...
-             IF (AVG_TYPE==2) THEN
-                Y = YSOL((I-1)*NEQN_USER+K)
-                A = YSOL(I*NEQN_USER+K)
-                ! If T is between MYTINIT and MYTINIT+DELAVG,
-                ! use the ODEs.
-                IF (STARTS) THEN
-                   IF (ABS(T-MYTINIT)<=0.0D0) THEN
-                      ! We need to handle the indeterminate
-                      ! form at MYTINIT.
-                      IF (I==1) THEN
-                         dA = Y0*F0
-                      ELSE
-                         dA = Y0*F0/TWOPOWA
-                      END IF
-                   ELSE
-                      ! If T>MYTINIT evaluate the ODEs.
-                      ! A'(t) = (y(t)*y(t) - A(t)) / (t - t0).
-                      IF (I==1) THEN
-                         dA = (Y*Y - A) / (T - MYTINIT)
-                      ELSE
-                         dA = (Y - A) / (T - MYTINIT)
-                      END IF
-                   END IF
-                ELSE
-                   ! If T is beyond MYTINIT+DELAVG, use the DDEs.
-                   IF (I==1) THEN
-                      ! A'(t) = (y(t)*y(t) - y(t-delta)*y(t-delta)) / delta.
-                      dA = (Y*Y - ZARRAY((I-1)*NEQN_USER+K,1)* &
-                           ZARRAY((I-1)*NEQN_USER+K,1)) / DELAVG
-                   ELSE
-                      dA = (Y - ZARRAY((I-1)*NEQN_USER+K,1)) / DELAVG
-                   END IF
-                END IF
-                DY(I*NEQN_USER+K) = dA
-             END IF
-          END DO
-       END DO
+        CALL DERIVS(T,YSOL,ZARRAY,DY)
     END IF
 
     RETURN
@@ -7367,30 +6927,24 @@ CONTAINS
     DOUBLE PRECISION, INTENT (IN) :: T
     ! ..
     ! .. Array Arguments ..
-    DOUBLE PRECISION, INTENT (IN) :: Y(*)
+    DOUBLE PRECISION, INTENT (IN) :: Y(:)
     ! ..
     ! .. Subroutine Arguments ..
-    EXTERNAL BETA
+    INTERFACE
+       SUBROUTINE BETA(T, Y, BVAL)
+          DOUBLE PRECISION, INTENT(IN) :: T
+          DOUBLE PRECISION, INTENT(IN) :: Y(:)
+          DOUBLE PRECISION, INTENT(OUT) :: BVAL(:)
+       END SUBROUTINE BETA
+    END INTERFACE
     ! ..
-    IF (AVG_TYPE==0) THEN
-       ! Averaging is not being performed.
-       ! Do nothing if NLAGS = 0.
-       IF (NLAGS>0) THEN
-          IF (CONSTANT_DELAYS) THEN
-             CALL CD_BETA(T,MYBVAL,NLAGS)
-          ELSE
-             CALL BETA(T,Y,MYBVAL)
-          END IF
-       END IF
-    ELSE
-       ! Averaging is being performed.
-       IF (CONSTANT_DELAYS) THEN
-          CALL CD_BETA(T,MYBVAL(1:NLAGS_USER),NLAGS_USER)
-          ! IF (AVG_TYPE /= 0) DELAVG = T - MYBVAL(NLAGS)
-       ELSE
-          CALL BETA(T,Y(1:NEQN_USER),MYBVAL(1:NLAGS_USER))
-          ! IF (AVG_TYPE /= 0) DELAVG = T - MYBVAL(NLAGS)
-       END IF
+    ! Do nothing if NLAGS = 0.
+    IF (NLAGS>0) THEN
+        IF (CONSTANT_DELAYS) THEN
+            CALL CD_BETA(T,MYBVAL,NLAGS)
+        ELSE
+            CALL BETA(T,Y,MYBVAL)
+        END IF
     END IF
 
     IF (INFO_DROPPED) THEN
@@ -7416,40 +6970,22 @@ CONTAINS
 
     ! .. Scalar Arguments ..
     DOUBLE PRECISION, INTENT (IN) :: T
-    INTEGER :: I, J
     ! ..
     ! .. Subroutine Arguments ..
-    EXTERNAL YINIT
+    INTERFACE
+       SUBROUTINE YINIT(T,Y)
+          DOUBLE PRECISION :: T
+          DOUBLE PRECISION, DIMENSION(:) :: Y
+          INTENT(IN):: T
+          INTENT(OUT) :: Y
+       END SUBROUTINE YINIT
+    END INTERFACE
     ! ..
-    IF (AVG_TYPE==0) THEN
-       ! Averaging is not being performed.
-       IF (CONSTANT_HISTORY) THEN
-          CALL CH_YINIT(VTEMP3(1:MYN),MYN)
-          IF (MYNEUTRAL) VTEMP3(MYN+1:2*MYN) = 0D0            
-       ELSE
-          CALL YINIT(T,VTEMP3)
-       END IF
+    IF (CONSTANT_HISTORY) THEN
+        CALL CH_YINIT(VTEMP3(1:MYN),MYN)
+        IF (MYNEUTRAL) VTEMP3(MYN+1:2*MYN) = 0D0            
     ELSE
-       ! Averaging is being performed.
-       IF (CONSTANT_HISTORY) THEN
-          CALL CH_YINIT(VTEMP3(1:NEQN_USER),NEQN_USER)
-          IF (MYNEUTRAL) VTEMP3(NEQN_USER+1:2*NEQN_USER) = 0
-       ELSE
-          CALL YINIT(T,VTEMP3(1:NEQN_USER))
-       END IF
-       ! Averaged values...
-       IF (AVG_TYPE==1) THEN
-          DO I =1, MAVG
-             VTEMP3(I*NEQN_USER+1:(I+1)*NEQN_USER) = &
-                  Y0SAVE(1:NEQN_USER)
-          END DO
-       ELSE
-          DO I =1, MAVG
-             DO J = 1, NEQN_USER
-                VTEMP3(I*NEQN_USER+J) = Y0SAVE(J)*Y0SAVE(J)
-             END DO
-          END DO
-       END IF
+        CALL YINIT(T,VTEMP3)
     END IF
 
     RETURN
@@ -7520,11 +7056,19 @@ CONTAINS
     LOGICAL, INTENT (INOUT) :: ITERATE
     ! ..
     ! .. Array Arguments ..
-    DOUBLE PRECISION, INTENT (IN) :: K0(*), K2(*), K3(*), K4(*), K5(*), &
-         K6(*), K7(*), K8(*), K9(*), Y(*), YOLD(*)
+    DOUBLE PRECISION, INTENT (IN) :: K0(:), K2(:), K3(:), K4(:), K5(:), &
+         K6(:), K7(:), K8(:), K9(:), Y(:), YOLD(:)
     ! ..
     ! .. Subroutine Arguments ..
-    EXTERNAL YINIT
+    !EXTERNAL YINIT
+    INTERFACE
+       SUBROUTINE YINIT(T,Y)
+         DOUBLE PRECISION :: T
+         DOUBLE PRECISION, DIMENSION(:) :: Y
+         INTENT(IN):: T
+         INTENT(OUT) :: Y
+      END SUBROUTINE YINIT
+    END INTERFACE
     ! ..
     ! .. Local Scalars ..
     DOUBLE PRECISION :: TVAL
@@ -7626,11 +7170,19 @@ CONTAINS
     LOGICAL, INTENT (INOUT) :: ITERATE
     ! ..
     ! .. Array Arguments ..
-    DOUBLE PRECISION, INTENT (IN) :: K0(*), K2(*), K3(*), K4(*), K5(*), &
-         K6(*), K7(*), K8(*), K9(*), Y(*), YOLD(*)
+    DOUBLE PRECISION, INTENT (IN) :: K0(:), K2(:), K3(:), K4(:), K5(:), &
+         K6(:), K7(:), K8(:), K9(:), Y(:), YOLD(:)
     ! ..
     ! .. Subroutine Arguments ..
-    EXTERNAL YINIT
+    !EXTERNAL YINIT
+    INTERFACE
+       SUBROUTINE YINIT(T,Y)
+         DOUBLE PRECISION :: T
+         DOUBLE PRECISION, DIMENSION(:) :: Y
+         INTENT(IN):: T
+         INTENT(OUT) :: Y
+      END SUBROUTINE YINIT
+    END INTERFACE
     ! ..
     ! .. Local Scalars ..
     DOUBLE PRECISION :: DELINT, TN, TO, TVAL
@@ -7718,10 +7270,10 @@ CONTAINS
        ! Interpolate the data.
        ITASK = 1
        IF (MYNEUTRAL) ITASK = 3
-       CALL DDE_POLY(TO,QUEUE(1,IBEGIN+1),DELINT,QUEUE(1,IBEGIN+2), &
-            QUEUE(1,IBEGIN+3),QUEUE(1,IBEGIN+4),QUEUE(1,IBEGIN+5), &
-            QUEUE(1,IBEGIN+6),QUEUE(1,IBEGIN+7),QUEUE(1,IBEGIN+8), &
-            QUEUE(1,IBEGIN+9),QUEUE(1,IBEGIN+10),MYR,VTEMP3(MYN+1:2*MYN), &
+       CALL DDE_POLY(TO,QUEUE(:,IBEGIN+1),DELINT,QUEUE(:,IBEGIN+2), &
+            QUEUE(:,IBEGIN+3),QUEUE(:,IBEGIN+4),QUEUE(:,IBEGIN+5), &
+            QUEUE(:,IBEGIN+6),QUEUE(:,IBEGIN+7),QUEUE(:,IBEGIN+8), &
+            QUEUE(:,IBEGIN+9),QUEUE(:,IBEGIN+10),MYR,VTEMP3(MYN+1:2*MYN), &
             TVAL,ITASK)
        ZARRAY(1:MYN,I) = MYR(1:MYN)
        IF (MYNEUTRAL) DARRAY(1:MYN,I) = VTEMP3(MYN+1:2*MYN)
@@ -7753,7 +7305,7 @@ CONTAINS
     DOUBLE PRECISION, INTENT (IN) :: TNEW, TOLD, TOUT
     ! ..
     ! .. Array Arguments ..
-    DOUBLE PRECISION, INTENT (OUT) :: DYOUT(*), YOUT(*)
+    DOUBLE PRECISION, INTENT (OUT) :: DYOUT(:), YOUT(:)
     ! ..
     ! .. Local Scalars ..
     DOUBLE PRECISION :: DELINT
@@ -7762,8 +7314,8 @@ CONTAINS
     DELINT = TNEW - TOLD
 
     ! Do the interpolation.
-    CALL DDE_POLY(TOLD,MYYOLD,DELINT,KMAT(1,1),KMAT(1,3),KMAT(1,4), &
-         KMAT(1,5),KMAT(1,6),KMAT(1,7),KMAT(1,8),KMAT(1,9),KMAT(1,10),YOUT, &
+    CALL DDE_POLY(TOLD,MYYOLD,DELINT,KMAT(:,1),KMAT(:,3),KMAT(:,4), &
+         KMAT(:,5),KMAT(:,6),KMAT(:,7),KMAT(:,8),KMAT(:,9),KMAT(:,10),YOUT, &
          DYOUT,TOUT,3)
 
     RETURN
@@ -7788,8 +7340,8 @@ CONTAINS
     INTEGER, INTENT (IN) :: I, IMETH
     ! ..
     ! .. Array Arguments ..
-    DOUBLE PRECISION, INTENT (IN) :: K0(*), K2(*), K3(*), K4(*), K5(*), &
-         K6(*), K7(*), K8(*), K9(*), YOLD(*)
+    DOUBLE PRECISION, INTENT (IN) :: K0(:), K2(:), K3(:), K4(:), K5(:), &
+         K6(:), K7(:), K8(:), K9(:), YOLD(:)
     ! ..
     ! .. Local Scalars ..
     DOUBLE PRECISION :: TVAL, Z
@@ -7904,7 +7456,7 @@ CONTAINS
     INTEGER, INTENT (IN) :: IRCALL
     ! ..
     ! .. Array Arguments ..
-    DOUBLE PRECISION, INTENT (INOUT) :: GX(*)
+    DOUBLE PRECISION, INTENT (INOUT) :: GX(:)
     ! ..
     ! .. Local Scalars ..
     DOUBLE PRECISION :: T2, TMAX
@@ -8099,11 +7651,30 @@ CONTAINS
     DOUBLE PRECISION, INTENT (IN) :: T
     ! ..
     ! .. Array Arguments ..
-    DOUBLE PRECISION, INTENT (IN) :: DY(*), Y(*)
-    DOUBLE PRECISION, INTENT (OUT) :: G(*)
+    DOUBLE PRECISION, INTENT (IN) :: DY(:), Y(:)
+    DOUBLE PRECISION, INTENT (OUT) :: G(:)
     ! ..
     ! .. Subroutine Arguments ..
-    EXTERNAL BETA, GUSER
+    !EXTERNAL BETA, GUSER
+    INTERFACE
+       SUBROUTINE BETA(T,Y,BVAL)
+          DOUBLE PRECISION :: T
+          DOUBLE PRECISION, DIMENSION(:) :: Y
+          DOUBLE PRECISION, DIMENSION(:) :: BVAL
+          INTENT(IN):: T,Y
+          INTENT(OUT) :: BVAL
+       END SUBROUTINE BETA
+    END INTERFACE
+    INTERFACE
+       SUBROUTINE GUSER(T,Y,DYDT,Z,G)
+          DOUBLE PRECISION :: T
+          DOUBLE PRECISION, DIMENSION(:) :: Y,DYDT
+          DOUBLE PRECISION, DIMENSION(:,:) :: Z
+          DOUBLE PRECISION, DIMENSION(:) :: G
+          INTENT(IN):: T,Y,DYDT,Z
+          INTENT(OUT) :: G
+       END SUBROUTINE GUSER
+    END INTERFACE
     ! ..
     ! .. Local Scalars ..
     INTEGER :: I, NG, NGUSP1
@@ -8213,12 +7784,39 @@ CONTAINS
     INTEGER, INTENT (INOUT) :: INDEX1
     ! ..
     ! .. Array Arguments ..
-    DOUBLE PRECISION, INTENT (IN) :: K0(*), K2(*), K3(*), K4(*), K5(*), &
-         K6(*), K7(*), K8(*), K9(*), YOLD(*)
+    DOUBLE PRECISION, INTENT (IN) :: K0(:), K2(:), K3(:), K4(:), K5(:), &
+         K6(:), K7(:), K8(:), K9(:), YOLD(:)
     DOUBLE PRECISION, INTENT (INOUT) :: TVALS(4)
     ! ..
     ! .. Subroutine Arguments ..
-    EXTERNAL BETA, GUSER, YINIT
+    !EXTERNAL BETA, GUSER, YINIT
+    INTERFACE
+       SUBROUTINE BETA(T,Y,BVAL)
+          DOUBLE PRECISION :: T
+          DOUBLE PRECISION, DIMENSION(:) :: Y
+          DOUBLE PRECISION, DIMENSION(:) :: BVAL
+          INTENT(IN):: T,Y
+          INTENT(OUT) :: BVAL
+       END SUBROUTINE BETA
+    END INTERFACE
+    INTERFACE
+       SUBROUTINE GUSER(T,Y,DYDT,Z,G)
+          DOUBLE PRECISION :: T
+          DOUBLE PRECISION, DIMENSION(:) :: Y,DYDT
+          DOUBLE PRECISION, DIMENSION(:,:) :: Z
+          DOUBLE PRECISION, DIMENSION(:) :: G
+          INTENT(IN):: T,Y,DYDT,Z
+          INTENT(OUT) :: G
+       END SUBROUTINE GUSER
+    END INTERFACE
+    INTERFACE
+       SUBROUTINE YINIT(T,Y)
+         DOUBLE PRECISION :: T
+         DOUBLE PRECISION, DIMENSION(:) :: Y
+         INTENT(IN):: T
+         INTENT(OUT) :: Y
+      END SUBROUTINE YINIT
+    END INTERFACE
     ! ..
     ! .. Local Scalars ..
     DOUBLE PRECISION :: BNEW, BOLD, GTOL, HDUM1, HDUM2, TNEW, TOLD, TROOT1, &
@@ -8583,7 +8181,7 @@ CONTAINS
     INTEGER, INTENT (IN) :: KFLAG, N
     ! ..
     ! .. Array Arguments ..
-    DOUBLE PRECISION, INTENT (INOUT) :: DX(*), DY(*)
+    DOUBLE PRECISION, INTENT (INOUT) :: DX(:), DY(:)
     ! ..
     ! .. Local Scalars ..
     DOUBLE PRECISION :: R, T, TT, TTY, TY
@@ -8878,10 +8476,19 @@ CONTAINS
     INTEGER, INTENT (IN) :: LEVMAX
     ! ..
     ! .. Array Arguments ..
-    DOUBLE PRECISION, INTENT (IN) :: Y(*)
+    DOUBLE PRECISION, INTENT (IN) :: Y(:)
     ! ..
     ! .. Subroutine Arguments ..
-    EXTERNAL BETA
+    !EXTERNAL BETA
+    INTERFACE
+       SUBROUTINE BETA(T,Y,BVAL)
+          DOUBLE PRECISION :: T
+          DOUBLE PRECISION, DIMENSION(:) :: Y
+          DOUBLE PRECISION, DIMENSION(:) :: BVAL
+          INTENT(IN):: T,Y
+          INTENT(OUT) :: BVAL
+       END SUBROUTINE BETA
+    END INTERFACE
     ! ..
     ! .. Local Scalars ..
     DOUBLE PRECISION :: TC, TOL, SPACINGM, SPACINGI
