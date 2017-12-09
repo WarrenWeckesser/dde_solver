@@ -13,7 +13,7 @@ been made in the code, so gfortran does not know that some array arguments
 are assumed-shape.  It passes invalid data in some subroutine calls,
 resulting in a segmentation fault.
 
-The initial commit adds the file "dde_solve_m.f90".  This file was originally
+The initial commit adds the file "dde_solver_m.f90".  This file was originally
 called "dde_solver_m_unix.f90" in the ZIP file available on S. Thompson's web
 page.  The only difference between the original "dde_solver_m.f90" and
 "dde_solver_m_unix.f90" was the line endings.  For this repository, I am
