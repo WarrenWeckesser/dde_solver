@@ -28,8 +28,7 @@ DOUBLE PRECISION :: Pi
 
 Pi = 3.1415926535897932385D0
 
-! Intentionally too small to pass.
-finaltol = 1.0D-21
+finaltol = 1.0D-9
 
 ! Set the parameters of the DDE
 tau = Pi/2.0D0
