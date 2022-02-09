@@ -10,11 +10,11 @@ jobs:
     steps:
     - name: Check out repository code
       uses: actions/checkout@v2
-    - name: delay oscillator
+    - name: "Test: delay oscillator"
       run: |
         cd tests/delay_oscillator
         bash run_delay_oscillator_test.sh
-    - name: Paul (1992)
+    - name: "Test: Paul (1992)"
       run: |
         cd tests/paul1992
         bash run_paul1992_test.sh

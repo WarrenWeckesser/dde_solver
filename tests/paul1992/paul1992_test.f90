@@ -28,8 +28,7 @@ DOUBLE PRECISION :: relerr, abserr, stoptime, expected, finalerror, finaltol
 
 e = 2.718281828459045235360287D0
 
-! Intentionally too small...
-finaltol = 1.0D-24
+finaltol = 1.0D-9
 
 ! Set the solver parameters: relative error, abs. error, stop time
 relerr = 1D-10
