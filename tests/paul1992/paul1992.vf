@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<VectorField Name="paul1992">
+<Expression Name="beta" Formula="log(y)-1" />
+<Expression Name="delayedy" Formula="delay(y,t-beta)" Description="y(ln(y)-1)" />
+<StateVariable Name="y" Formula="(1/(t+1))*y*delayedy" DefaultInitialCondition="1" DefaultHistory="1" />
+</VectorField>
