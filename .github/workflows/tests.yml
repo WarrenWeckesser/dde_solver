@@ -3,13 +3,14 @@ name: Test dde_solver_m
 on: [push, pull_request]
 
 jobs:
-  test-delay-oscillator:
+  test:
 
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v1
-    - name: Test with simple delay oscillator
+    - name: Check out repository code
+      uses: actions/checkout@v2
+    - name: delay oscillator
       run: |
-        cd tests
+        cd tests/delay_oscillator
         bash run_delay_oscillator_test.sh
