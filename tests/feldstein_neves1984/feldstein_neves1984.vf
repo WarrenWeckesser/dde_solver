@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<VectorField Name="feldstein_neves1984" Description="State-dependent delay equation, from Feldstein and Neves, SIAM J. Numer. Anal., Vol. 21, No. 5, pp. 844-863, October 1984" >
+<Expression Name="beta" Formula="y-sqrt(2)" />
+<Expression Name="delayedy" Formula="delay(y,t-beta)" />
+<StateVariable Name="y" Formula="(1/2)*(1/sqrt(t+1))*delayedy" DefaultInitialCondition="1" DefaultHistory="1" />
+</VectorField>

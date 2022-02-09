@@ -4,17 +4,23 @@ on: [push, pull_request]
 
 jobs:
   test:
-
     runs-on: ubuntu-latest
     
     steps:
     - name: Check out repository code
       uses: actions/checkout@v2
+
     - name: "Test: delay oscillator"
       run: |
         cd tests/delay_oscillator
         bash run_delay_oscillator_test.sh
+
     - name: "Test: Paul (1992)"
       run: |
         cd tests/paul1992
         bash run_paul1992_test.sh
+
+    - name: "Test: Feldstein & Neves (1984)"
+      run: |
+        cd tests/feldstein_neves1984
+        bash run_feldstein_neves1984_test.sh
