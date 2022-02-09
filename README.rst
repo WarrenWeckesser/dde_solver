@@ -2,9 +2,7 @@ dde_solver
 ==========
 
 This repository contains my work on updating the DDE_SOLVER Fortran
-code originally written by L. Shampine and S. Thompson:
-
-    http://www.radford.edu/~thompson/ffddes/
+code originally written by  S. Thompson and L. Shampine [1].
 
 When the DDE_SOLVER code is compiled with recent versions of gfortran,
 running the solver may result in segmentation faults or other crashes.
@@ -26,3 +24,10 @@ Major changes
   match the new interfaces.)
 * Removed ODEAVG, and removed all the code in dde_solver_m.f90 related to averaging.
 * Added the function DDE_SOLVER_VERSION that returns the software version.
+
+-----
+
+1.  S. Thompson, L.F. Shampine, A friendly Fortran DDE solver,
+    *Applied Numerical Mathematics*, Volume 56, Issues 3–4, 2006,
+    pages 503-516, ISSN 0168-9274,
+    https://doi.org/10.1016/j.apnum.2005.04.027.
