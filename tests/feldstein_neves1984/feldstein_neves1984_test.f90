@@ -25,8 +25,7 @@ TYPE(DDE_OPTS) :: OPTS
 DOUBLE PRECISION, DIMENSION(2) :: TSPAN
 DOUBLE PRECISION :: relerr, abserr, stoptime, expected, finalerror, finaltol
 
-! Intentionally too small, so initially the test fails...
-finaltol = 1.0D-20
+finaltol = 1.0D-8
 
 ! Set the solver parameters: relative error, abs. error, stop time
 relerr = 1D-9
