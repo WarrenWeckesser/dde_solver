@@ -12,6 +12,7 @@
 
 PROGRAM paul1992_demo
 
+USE testing
 USE DEFINE_paul1992_DDEs
 USE DDE_SOLVER_M
 
@@ -24,29 +25,22 @@ TYPE(DDE_OPTS) :: OPTS
 
 DOUBLE PRECISION, DIMENSION(2) :: TSPAN
 DOUBLE PRECISION :: e
-DOUBLE PRECISION :: relerr, abserr, stoptime, expected, finalerror, finaltol
+DOUBLE PRECISION :: stoptime, expected
 
 e = 2.718281828459045235360287D0
 
-finaltol = 1.0D-9
-
-! Set the solver parameters: relative error, abs. error, stop time
-relerr = 1D-10
-abserr = 1D-12
 stoptime = 10.0D0
 
 TSPAN(1) = 0.0D0
 TSPAN(2) = stoptime
-OPTS = DDE_SET(RE=relerr, AE=abserr)
+OPTS = DDE_SET(RE=1D-10, AE=1D-12)
 
 SOL = DDE_SOLVER(NVAR, paul1992_ddes, paul1992_beta, paul1992_history, &
                  TSPAN, OPTIONS=OPTS)
 
 expected = (e/(3.0D0 - DLOG(stoptime + 1.0D0))) ** e
-finalerror = DABS(SOL%Y(SOL%NPTS, 1) - expected) / expected
 
-IF (finalerror > finaltol) THEN
-    print *, 'finalerror = ', finalerror, ' exceeds desired max error of', finaltol
+IF (.not. is_close(SOL%Y(SOL%NPTS, 1), expected, 1D-9, 'Y(N)')) THEN
     ! NOTE: EXIT(status) is not standard Fortran!
     CALL EXIT(1)
 END IF

@@ -12,6 +12,7 @@
 
 PROGRAM feldstein_neves1984_demo
 
+USE testing
 USE DEFINE_feldstein_neves1984_DDEs
 USE DDE_SOLVER_M
 
@@ -23,18 +24,13 @@ TYPE(DDE_SOL) :: SOL
 TYPE(DDE_OPTS) :: OPTS
 
 DOUBLE PRECISION, DIMENSION(2) :: TSPAN
-DOUBLE PRECISION :: relerr, abserr, stoptime, expected, finalerror, finaltol
+DOUBLE PRECISION :: stoptime, expected
 
-finaltol = 1.0D-8
-
-! Set the solver parameters: relative error, abs. error, stop time
-relerr = 1D-9
-abserr = 1D-12
 stoptime = 2.0D0
 
 TSPAN(1) = 0.0D0
 TSPAN(2) = stoptime
-OPTS = DDE_SET(RE=relerr, AE=abserr)
+OPTS = DDE_SET(RE=1D-9, AE=1D-12)
 
 SOL = DDE_SOLVER(NVAR, feldstein_neves1984_ddes, feldstein_neves1984_beta, &
                  feldstein_neves1984_history, TSPAN, OPTIONS=OPTS)
@@ -43,10 +39,8 @@ SOL = DDE_SOLVER(NVAR, feldstein_neves1984_ddes, feldstein_neves1984_beta, &
 ! interval 1 <= t <= 2.
 expected = (stoptime + 1.0D0)/4.0D0 + 0.5D0 + &
            (1.0D0 - DSQRT(2.0D0)/2.0D0)*DSQRT(stoptime + 1.0D0)
-finalerror = DABS(SOL%Y(SOL%NPTS, 1) - expected) / expected
 
-IF (finalerror > finaltol) THEN
-    print *, 'finalerror = ', finalerror, ' exceeds desired max error of', finaltol
+IF (.not. is_close(SOL%Y(SOL%NPTS, 1), expected, 1.0D-8, 'Y(N)')) THEN
     ! NOTE: EXIT(status) is not standard Fortran!
     CALL EXIT(1)
 END IF
