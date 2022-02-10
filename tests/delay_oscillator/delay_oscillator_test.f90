@@ -3,58 +3,88 @@
 !
 ! Use DDE_SOLVER_M to solve the DDEs defined in delay_oscillator.f90.
 !
+! The exact solution to the problem solved is y = sin(t).
 ! The program checks the value of the solution at t=5*pi/2, where the
-! exact solution is 1.0.
+! exact solution is 1.0.  It also checks that the three events where
+! y = 0.5 in the interval 0 <= t <= 5*pi/2 are detected.
 !
 
-PROGRAM delay_oscillator_test
+module testing
 
-USE DEFINE_delay_oscillator_DDEs
-USE DDE_SOLVER_M
+    implicit none
 
-IMPLICIT NONE
+contains
 
-INTEGER, DIMENSION(2) :: NVAR = (/NEQN, NLAGS/)
+    logical function is_close(value, expected, reltol, name)
+    double precision, intent(in) :: value, expected, reltol
+    character(len=*), intent(in) :: name
 
-TYPE(DDE_SOL) :: SOL
-TYPE(DDE_OPTS) :: OPTS
+    double precision relerr
 
-DOUBLE PRECISION, DIMENSION(1) :: LAGS
-DOUBLE PRECISION, DIMENSION(1) :: p_
-DOUBLE PRECISION, DIMENSION(2) :: TSPAN
+    relerr = dabs(value - expected)/expected
+    is_close = relerr .le. reltol
+    if (.not. is_close) then
+        print *, 'is_close failed for for: ', name
+        print *, 'expected value:  ', expected
+        print *, 'actual value:    ', value
+        print *, 'rel. err:        ', relerr
+        print *, 'allowed rel.err: ', reltol
+    end if
+    end function is_close
 
-DOUBLE PRECISION :: relerr, abserr, stoptime, finalerror, finaltol
-DOUBLE PRECISION :: Pi
+end module testing
 
-Pi = 3.1415926535897932385D0
+program delay_oscillator_test
 
-finaltol = 1.0D-9
+use testing
+use define_delay_oscillator_functions
+use dde_solver_m
 
-! Set the parameters of the DDE
-tau = Pi/2.0D0
+implicit none
 
-! Set the solver parameters: relative error, abs. error, stop time
-relerr = 1D-9
-abserr = 1D-12
-stoptime = 5*Pi/2
-p_(1) = tau
+! NEQN, NLAGS and NEF are from the define_delay_oscillator_functions module.
+integer, dimension(3) :: nvar = (/NEQN, NLAGS, NEF/)
 
-! Initialize the array of lags
-LAGS(1) = tau
+type(dde_sol) :: sol
+type(dde_opts) :: opts
 
-TSPAN(1) = 0.0
-TSPAN(2) = stoptime
-OPTS = DDE_SET(RE=relerr, AE=abserr)
+double precision, dimension(NLAGS) :: lags
+double precision, dimension(2) :: tspan
 
-SOL = DDE_SOLVER(NVAR, delay_oscillator_ddes, LAGS, delay_oscillator_history, &
-                 TSPAN, OPTIONS=OPTS)
+double precision :: relerr, abserr
+double precision, parameter :: PI=3.1415926535897932385D0, PIby6=0.5235987755982988730771D0
+double precision, dimension(3) :: expected_event_times = (/ PIby6, 5*PIby6, 2*PI + PIby6 /)
+integer i
+character(len=30) :: varname
 
-finalerror = DABS(SOL%Y(SOL%NPTS, 1) - 1.0D0)
+! Initialize the lag to PI/2
+lags(1) = PI/2.0D0
 
-IF (finalerror > finaltol) THEN
-    print *, 'finalerror = ', finalerror, ' exceeds desired max error of', finaltol
-    ! NOTE: EXIT(status) is not standard Fortran!
-    CALL EXIT(1)
-END IF
+tspan(1) = 0.0
+tspan(2) = 5.0D0*PI/2.0D0
+opts = dde_set(re=1D-9, ae=1D-12)
 
-END PROGRAM delay_oscillator_test
+sol = dde_solver(nvar, ddes, lags, history, &
+                 tspan, event_fcn=event, options=opts)
+
+if (.not. is_close(sol%y(sol%npts, 1), 1.0D0, 1.0D-9, 'y(N)')) then
+    call exit(1)
+end if
+
+if (sol%ne .ne. 3) then
+    print *, 'detected', sol%ne, ' events, expected 3'
+    call exit(1)
+end if
+
+do i = 1, 3
+    write(varname, "(A,I1,A)") "te(", i, ")"
+    if (.not. is_close(sol%te(i), expected_event_times(i), 1.0D-9, varname)) then
+        call exit(1)
+    end if
+    write(varname, "(A,I1,A)") "ye(", i, ")"
+    if (.not. is_close(sol%ye(i, 1), 0.5D0, 1.0D-9, varname)) then
+        call exit(1)
+    end if
+end do
+
+end program delay_oscillator_test

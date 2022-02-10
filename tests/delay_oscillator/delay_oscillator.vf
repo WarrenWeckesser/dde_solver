@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<VectorField Name="delay_oscillator">
-<Parameter Name="tau" DefaultValue="Pi/2" Description="Delay time" />
-<Expression Name="delayedx" Formula="delay(x,tau)" Description="x(t-tau)" />
-<StateVariable Name="x" Formula="-delayedx"
-                 DefaultInitialCondition="-1" DefaultHistory="sin(t)" />
-</VectorField>
