@@ -47,4 +47,4 @@ volinteq: q1damodule.o volinteq.o
 
 clean:
 	rm -f $(PROGS) *.o *.mod
-	rm -f *.dat
+	rm -f *.dat debug.ans
