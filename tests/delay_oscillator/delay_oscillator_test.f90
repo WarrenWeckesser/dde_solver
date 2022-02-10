@@ -24,7 +24,7 @@ contains
     relerr = dabs(value - expected)/expected
     is_close = relerr .le. reltol
     if (.not. is_close) then
-        print *, 'is_close failed for for: ', name
+        print *, 'is_close failed for: ', name
         print *, 'expected value:  ', expected
         print *, 'actual value:    ', value
         print *, 'rel. err:        ', relerr
@@ -51,7 +51,6 @@ type(dde_opts) :: opts
 double precision, dimension(NLAGS) :: lags
 double precision, dimension(2) :: tspan
 
-double precision :: relerr, abserr
 double precision, parameter :: PI=3.1415926535897932385D0, PIby6=0.5235987755982988730771D0
 double precision, dimension(3) :: expected_event_times = (/ PIby6, 5*PIby6, 2*PI + PIby6 /)
 integer i
