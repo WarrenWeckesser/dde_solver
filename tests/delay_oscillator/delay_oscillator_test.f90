@@ -11,9 +11,9 @@
 
 program delay_oscillator_test
 
-use testing
-use define_delay_oscillator_functions
-use dde_solver_m
+use testing, only: is_close
+use define_delay_oscillator_functions, only: ddes, history, event, NEQN, NLAGS, NEF
+use dde_solver_m, only: dde_set, dde_solver, dde_sol, dde_opts
 
 implicit none
 

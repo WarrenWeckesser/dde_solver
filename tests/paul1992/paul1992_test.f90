@@ -10,39 +10,42 @@
 ! J. Appl. Num. Math., Vol. 9, pp. 403-414, 1992.
 !
 
-PROGRAM paul1992_demo
+program paul1992_demo
 
-USE testing
-USE DEFINE_paul1992_DDEs
-USE DDE_SOLVER_M
+use testing, only: is_close
+use define_paul1992_ddes, only: &
+        NEQN, NLAGS, &
+        paul1992_ddes, &
+        paul1992_history, &
+        paul1992_beta
+use dde_solver_m, only: dde_solver, dde_set, dde_opts, dde_sol
 
-IMPLICIT NONE
+implicit none
 
-INTEGER, DIMENSION(2) :: NVAR = (/NEQN,NLAGS/)
+double precision, parameter :: e=2.718281828459045235360287d0
 
-TYPE(DDE_SOL) :: SOL
-TYPE(DDE_OPTS) :: OPTS
+integer, dimension(2) :: nvar = (/NEQN, NLAGS/)
 
-DOUBLE PRECISION, DIMENSION(2) :: TSPAN
-DOUBLE PRECISION :: e
-DOUBLE PRECISION :: stoptime, expected
+type(dde_sol) :: sol
+type(dde_opts) :: opts
 
-e = 2.718281828459045235360287D0
+double precision, dimension(2) :: tspan
+double precision :: stoptime, expected
 
-stoptime = 10.0D0
+stoptime = 10.0d0
 
-TSPAN(1) = 0.0D0
-TSPAN(2) = stoptime
-OPTS = DDE_SET(RE=1D-10, AE=1D-12)
+tspan(1) = 0.0d0
+tspan(2) = stoptime
+opts = dde_set(re=1d-10, ae=1d-12)
 
-SOL = DDE_SOLVER(NVAR, paul1992_ddes, paul1992_beta, paul1992_history, &
-                 TSPAN, OPTIONS=OPTS)
+sol = dde_solver(nvar, paul1992_ddes, paul1992_beta, paul1992_history, &
+                 tspan, options=opts)
 
-expected = (e/(3.0D0 - DLOG(stoptime + 1.0D0))) ** e
+expected = (e/(3.0d0 - dlog(stoptime + 1.0d0))) ** e
 
-IF (.not. is_close(SOL%Y(SOL%NPTS, 1), expected, 1D-9, 'Y(N)')) THEN
-    ! NOTE: EXIT(status) is not standard Fortran!
-    CALL EXIT(1)
-END IF
+if (.not. is_close(sol%y(sol%npts, 1), expected, 1d-9, 'y(n)')) then
+    ! note: exit(status) is not standard fortran!
+    call exit(1)
+end if
 
-END PROGRAM paul1992_demo
+end program paul1992_demo

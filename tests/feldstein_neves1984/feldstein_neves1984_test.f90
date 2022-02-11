@@ -10,39 +10,43 @@
 ! Vol. 21, No. 5., pp. 844-863 (October, 1984)
 !
 
-PROGRAM feldstein_neves1984_demo
+program feldstein_neves1984_demo
 
-USE testing
-USE DEFINE_feldstein_neves1984_DDEs
-USE DDE_SOLVER_M
+use testing, only: is_close
+use define_feldstein_neves1984_DDEs, only: &
+        NEQN, NLAGS, &
+        feldstein_neves1984_ddes, &
+        feldstein_neves1984_history, &
+        feldstein_neves1984_beta
+use dde_solver_m, only: dde_solver, dde_set, dde_opts, dde_sol
 
-IMPLICIT NONE
+implicit none
 
-INTEGER, DIMENSION(2) :: NVAR = (/NEQN,NLAGS/)
+integer, dimension(2) :: nvar = (/NEQN, NLAGS/)
 
-TYPE(DDE_SOL) :: SOL
-TYPE(DDE_OPTS) :: OPTS
+type(dde_sol) :: sol
+type(dde_opts) :: opts
 
-DOUBLE PRECISION, DIMENSION(2) :: TSPAN
-DOUBLE PRECISION :: stoptime, expected
+double precision, dimension(2) :: tspan
+double precision :: stoptime, expected
 
-stoptime = 2.0D0
+stoptime = 2.0d0
 
-TSPAN(1) = 0.0D0
-TSPAN(2) = stoptime
-OPTS = DDE_SET(RE=1D-9, AE=1D-12)
+tspan(1) = 0.0d0
+tspan(2) = stoptime
+opts = dde_set(re=1d-9, ae=1d-12)
 
-SOL = DDE_SOLVER(NVAR, feldstein_neves1984_ddes, feldstein_neves1984_beta, &
-                 feldstein_neves1984_history, TSPAN, OPTIONS=OPTS)
+sol = dde_solver(nvar, feldstein_neves1984_ddes, feldstein_neves1984_beta, &
+                 feldstein_neves1984_history, tspan, options=opts)
 
 ! This expression for the expected value is only valid in the
 ! interval 1 <= t <= 2.
-expected = (stoptime + 1.0D0)/4.0D0 + 0.5D0 + &
-           (1.0D0 - DSQRT(2.0D0)/2.0D0)*DSQRT(stoptime + 1.0D0)
+expected = (stoptime + 1.0d0)/4.0d0 + 0.5d0 + &
+           (1.0d0 - dsqrt(2.0d0)/2.0d0)*dsqrt(stoptime + 1.0d0)
 
-IF (.not. is_close(SOL%Y(SOL%NPTS, 1), expected, 1.0D-8, 'Y(N)')) THEN
+if (.not. is_close(sol%y(sol%npts, 1), expected, 1.0d-8, 'y(n)')) then
     ! NOTE: EXIT(status) is not standard Fortran!
-    CALL EXIT(1)
-END IF
+    call exit(1)
+end if
 
-END PROGRAM feldstein_neves1984_demo
+end program feldstein_neves1984_demo
