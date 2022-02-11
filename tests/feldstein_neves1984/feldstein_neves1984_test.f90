@@ -18,7 +18,7 @@ use define_feldstein_neves1984_DDEs, only: &
         feldstein_neves1984_ddes, &
         feldstein_neves1984_history, &
         feldstein_neves1984_beta
-use dde_solver_m, only: dde_solver, dde_set, dde_opts, dde_sol
+use dde_solver_m, only: dde_solver, dde_set, dde_opts, dde_sol, release_arrays
 
 implicit none
 
@@ -39,6 +39,11 @@ opts = dde_set(re=1d-9, ae=1d-12)
 sol = dde_solver(nvar, feldstein_neves1984_ddes, feldstein_neves1984_beta, &
                  feldstein_neves1984_history, tspan, options=opts)
 
+if (sol%flag .ne. 0) then
+    print *, 'dde_solver failed. sol%flag =', sol%flag
+    call exit(1)
+end if
+
 ! This expression for the expected value is only valid in the
 ! interval 1 <= t <= 2.
 expected = (stoptime + 1.0d0)/4.0d0 + 0.5d0 + &
@@ -48,5 +53,7 @@ if (.not. is_close(sol%y(sol%npts, 1), expected, 1.0d-8, 'y(n)')) then
     ! NOTE: EXIT(status) is not standard Fortran!
     call exit(1)
 end if
+
+call release_arrays(sol, opts)
 
 end program feldstein_neves1984_demo

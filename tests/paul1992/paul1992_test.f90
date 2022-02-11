@@ -18,7 +18,7 @@ use define_paul1992_ddes, only: &
         paul1992_ddes, &
         paul1992_history, &
         paul1992_beta
-use dde_solver_m, only: dde_solver, dde_set, dde_opts, dde_sol
+use dde_solver_m, only: dde_solver, dde_set, dde_opts, dde_sol, release_arrays
 
 implicit none
 
@@ -41,11 +41,18 @@ opts = dde_set(re=1d-10, ae=1d-12)
 sol = dde_solver(nvar, paul1992_ddes, paul1992_beta, paul1992_history, &
                  tspan, options=opts)
 
+if (sol%flag .ne. 0) then
+    print *, 'dde_solver failed. sol%flag =', sol%flag
+    call exit(1)
+end if
+
 expected = (e/(3.0d0 - dlog(stoptime + 1.0d0))) ** e
 
 if (.not. is_close(sol%y(sol%npts, 1), expected, 1d-9, 'y(n)')) then
     ! note: exit(status) is not standard fortran!
     call exit(1)
 end if
+
+call release_arrays(sol, opts)
 
 end program paul1992_demo

@@ -11,7 +11,7 @@ contains
 
     double precision relerr
 
-    relerr = dabs(value - expected)/expected
+    relerr = dabs((value - expected)/expected)
     is_close = relerr .le. reltol
     if (.not. is_close) then
         print *, 'is_close failed for: ', name
