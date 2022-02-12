@@ -111,10 +111,11 @@ PROGRAM ex4p4p1
 
      ! Write the solution to a file for subsequent plotting
      ! in Matlab.
-     OPEN(UNIT=6, FILE='ex4p4p1.dat')
+     OPEN(UNIT=8, FILE='ex4p4p1.dat')
      DO I = 1,SOL%NPTS
-        WRITE(UNIT=6,FMT='(5D12.4)') SOL%T(I),(SOL%Y(I,J),J=1,NEQN)
+        WRITE(UNIT=8,FMT='(5D12.4)') SOL%T(I),(SOL%Y(I,J),J=1,NEQN)
      ENDDO
+     CLOSE(UNIT=8)
       
      PRINT *,' Normal return from DDE_SOLVER with results'
      PRINT *," written to the file 'ex4p4p1.dat'."

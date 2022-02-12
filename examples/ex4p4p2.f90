@@ -80,10 +80,11 @@ PROGRAM ex4p4p2
     YLAG = DDE_VAL(T - LAG,SOL)
     ! Write the solution to a file for subsequent plotting
     ! in Matlab.
-    OPEN(UNIT=6, FILE='ex4p4p2.dat')
+    OPEN(UNIT=8, FILE='ex4p4p2.dat')
     DO I = 1,NOUT
-        WRITE(UNIT=6,FMT='(2D12.4)') Y%YT(I,1),YLAG%YT(I,1)
+        WRITE(UNIT=8,FMT='(2D12.4)') Y%YT(I,1),YLAG%YT(I,1)
     ENDDO
+    CLOSE(UNIT=8)
       
     PRINT *,' Normal return from DDE_SOLVER with results'
     PRINT *," written to the file 'ex4p4p2.dat'."

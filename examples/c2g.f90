@@ -182,12 +182,13 @@ PROGRAM c2g
  
     ! Write the solution to a file for subsequent 
     ! plotting in Matlab.
-    OPEN(UNIT=6, FILE=FNAME)
+    OPEN(UNIT=9, FILE=FNAME)
     ! Set up format for exporting data.
     EXPORT = "(D12.4"//REPEAT(",D12.4",NEQN)//")"
     DO I = 1,SOL%NPTS
-      WRITE(UNIT=6,FMT=EXPORT) SOL%T(I),(SOL%Y(I,J),J=1,NEQN)
+      WRITE(UNIT=9,FMT=EXPORT) SOL%T(I),(SOL%Y(I,J),J=1,NEQN)
     ENDDO
+    CLOSE(UNIT=9)
       
     PRINT *,' Normal return from DDE_SOLVER with results'
     PRINT *," written to the file '",FNAME,"'."
@@ -216,6 +217,7 @@ PROGRAM c2g
             WRITE(*,EOUT) SOL%IE(I),SOL%TE(I),(SOL%YE(I,J),J=1,NEQN)
             WRITE(8,EOUT) SOL%IE(I),SOL%TE(I),(SOL%YE(I,J),J=1,NEQN)
         END DO
+        CLOSE(UNIT=8)
         PRINT *,' '
         PRINT *,' '
         PRINT *,' To access all the output in Matlab and plot the '
@@ -235,4 +237,3 @@ PROGRAM c2g
   CALL RELEASE_ARRAYS(SOL,OPTS)
 
 END PROGRAM c2g
-

@@ -239,8 +239,8 @@ PROGRAM infection
   DOUBLE PRECISION :: IT
   DOUBLE PRECISION, DIMENSION(NPLOT) :: T,TAU,S2,T1,S1
 
-  OPEN(UNIT=6, FILE='infection.dat')
-  WRITE(UNIT=6,FMT="(I12)") NEQN
+  OPEN(UNIT=8, FILE='infection.dat')
+  WRITE(UNIT=8,FMT="(I12)") NEQN
   OPEN(UNIT=7, FILE='Ioft.dat')
 
   ! Solve for four values of R0:
@@ -295,9 +295,9 @@ PROGRAM infection
     ! Matlab functions infection.m and infectionIoft.m.
 
     IF (SOL%FLAG == 0) THEN
-       WRITE(UNIT=6,FMT="(I12)") SOL%NPTS
+       WRITE(UNIT=8,FMT="(I12)") SOL%NPTS
        DO I = 1,SOL%NPTS
-         WRITE(UNIT=6,FMT="(D12.4)") SOL%T(I),&
+         WRITE(UNIT=8,FMT="(D12.4)") SOL%T(I),&
                            (SOL%Y(I,J),J=1,NEQN)
        END DO
        ! Generate the data to plot I(t).
@@ -345,6 +345,8 @@ PROGRAM infection
     CALL RELEASE_ARRAYS(SOL,OPTS)
     CALL RELEASE_INT(IPLOT)
   END DO
+  CLOSE(UNIT=7)
+  CLOSE(UNIT=8)
 
   PRINT *,' '
   PRINT *,' Successful run with results written to files.'

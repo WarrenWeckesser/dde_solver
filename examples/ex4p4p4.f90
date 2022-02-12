@@ -115,11 +115,12 @@ PROGRAM ex4p4p4
 
      ! Write the solution to a file for subsequent plotting
      ! in Matlab.
-     OPEN(UNIT=6, FILE='ex4p4p4.dat')
+     OPEN(UNIT=8, FILE='ex4p4p4.dat')
      DO I = 1,NOUT
-       WRITE(UNIT=6,FMT='(3D12.4)') TINT(I),YINT%YT(I,1),&
+       WRITE(UNIT=8,FMT='(3D12.4)') TINT(I),YINT%YT(I,1),&
                                     YINT%DT(I,1)
      END DO
+     CLOSE(UNIT=8)
 
      ! Write the extrema to a file for plotting.
      OPEN(UNIT=7,FILE='ex4p4p4extr.dat')
@@ -127,6 +128,7 @@ PROGRAM ex4p4p4
        WRITE(UNIT=7,FMT='(I10,2D12.4)') SOL%IE(I), &
                                         SOL%TE(I),SOL%YE(I,1)
      END DO
+     CLOSE(UNIT=7)
     
      PRINT *,' Normal return from DDE_SOLVER with results'
      PRINT *," written to the file 'ex4p4p4.dat' and the"

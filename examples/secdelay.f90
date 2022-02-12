@@ -143,12 +143,13 @@ PROGRAM secdelay
  
      ! Write the solution to a file for subsequent plotting
      ! in Matlab.
-     OPEN(UNIT=6, FILE=FNAME)
+     OPEN(UNIT=8, FILE=FNAME)
      ! Set up format for exporting data.
      EXPORT = "(D12.4"//REPEAT(",D12.4",NEQN)//")"
      DO I = 1,SOL%NPTS
-        WRITE(UNIT=6,FMT=EXPORT) SOL%T(I),(SOL%Y(I,J),J=1,NEQN)
+        WRITE(UNIT=8,FMT=EXPORT) SOL%T(I),(SOL%Y(I,J),J=1,NEQN)
      ENDDO
+     CLOSE(UNIT=8)
       
      PRINT *,' Normal return from DDE_SOLVER with results'
      PRINT *," written to the file '",FNAME,"'."
