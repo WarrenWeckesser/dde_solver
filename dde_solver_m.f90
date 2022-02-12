@@ -9234,7 +9234,7 @@ CONTAINS
         RETURN
       END SUBROUTINE DAFTER
   !____________________________________________________________________________
-  SUBROUTINE RELEASE_ARRAYS(SOL,OPTS)
+  SUBROUTINE RELEASE_ARRAYS(SOL, OPTS, VERBOSE)
 
     ! Deallocate work arrays and solution structure fields.
     ! NB: Do not call this subroutine before a return has been made
@@ -9257,13 +9257,21 @@ CONTAINS
     ! .. Structure Arguments ..
     TYPE (DDE_OPTS) :: OPTS
     TYPE (DDE_SOL) :: SOL
+    ! .. Optional Argument ..
+    LOGICAL, OPTIONAL :: VERBOSE
     ! ..
     ! .. Local Scalars ..
     INTEGER :: IER, L1, L2, TOTAL
+    LOGICAL :: DOPRINT
     ! ..
     ! .. Intrinsic Functions ..
     INTRINSIC SIZE
     ! ..
+
+    DOPRINT = .FALSE.
+    IF (PRESENT(VERBOSE)) THEN
+        DOPRINT = VERBOSE
+    END IF
 
     TOTAL = 0
 
@@ -9406,14 +9414,16 @@ CONTAINS
     DEALLOCATE (SOL%IPOINT,STAT=IER)
     CALL CHECK_STAT(IER,1165)
 
-    PRINT *, ' In subroutine RELEASE_ARRAYS, total number of words'
-    PRINT *, ' released = ', TOTAL
+    IF (DOPRINT) THEN
+        PRINT *, ' In subroutine RELEASE_ARRAYS, total number of words'
+        PRINT *, ' released = ', TOTAL
+    END IF
 
     RETURN
   END SUBROUTINE RELEASE_ARRAYS
   !____________________________________________________________________________
 
-  SUBROUTINE RELEASE_INT(YINT)
+  SUBROUTINE RELEASE_INT(YINT, VERBOSE)
 
     ! Deallocate interpolation structure fields.
 
@@ -9427,13 +9437,21 @@ CONTAINS
 
     ! .. Structure Arguments ..
     TYPE (DDE_INT) :: YINT
+    ! .. Optional Argument ..
+    LOGICAL, OPTIONAL :: VERBOSE
     ! ..
     ! .. Local Scalars ..
     INTEGER IER, L1, L2, TOTAL
+    LOGICAL DOPRINT
     ! ..
     ! .. Intrinsic Functions ..
     INTRINSIC SIZE
     ! ..
+
+    DOPRINT = .FALSE.
+    IF (PRESENT(VERBOSE)) THEN
+        DOPRINT = VERBOSE
+    END IF
 
     TOTAL = 0
 
@@ -9458,8 +9476,12 @@ CONTAINS
     TOTAL = TOTAL + L1
     DEALLOCATE (YINT%COMPONENTS,STAT=IER)
     CALL CHECK_STAT(IER,1203)
-    PRINT *, ' In subroutine RELEASE_INT, the total number'
-    PRINT *, ' of words released was ', TOTAL, '.'
+
+    IF (DOPRINT) THEN
+        PRINT *, ' In subroutine RELEASE_INT, the total number'
+        PRINT *, ' of words released was ', TOTAL, '.'
+    END IF
+
     RETURN
   END SUBROUTINE RELEASE_INT
 
