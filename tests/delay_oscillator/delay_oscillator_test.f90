@@ -9,7 +9,7 @@
 !   exact solution is 1.0;
 ! - the three events where y = 0.5 in the interval 0 <= t <= 5*pi/2
 !   are detected;
-! - the iterpolated values at t=pi/3, t=pi/2 and t=3*pi/2 are
+! - the interpolated values at t=pi/3, t=pi/2 and t=3*pi/2 are
 !   sqrt(3)/2, 1 and -1, respectively.
 !
 
@@ -74,7 +74,7 @@ do i = 1, 3
     end if
 end do
 
-! Use the iterpolator to get the values at t=pi/3, t=pi/2 and t=3*pi/2.
+! Use the interpolator to get the values at t=pi/3, t=pi/2 and t=3*pi/2.
 ! The expected values are sqrt(3)/2, 1 and -1, respectively.
 tint = (/ PI/3.0d0, PI/2.0d0, 3.0d0*PI/2.0d0 /)
 yint_expected = (/ dsqrt(3.0d0)/2.0d0, 1.0d0, -1.0d0 /)
