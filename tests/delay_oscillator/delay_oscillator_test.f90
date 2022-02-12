@@ -1,12 +1,16 @@
 !
-! delay_oscillator_demo.f90
+! delay_oscillator_test.f90
 !
 ! Use DDE_SOLVER_M to solve the DDEs defined in delay_oscillator.f90.
 !
 ! The exact solution to the problem solved is y = sin(t).
-! The program checks the value of the solution at t=5*pi/2, where the
-! exact solution is 1.0.  It also checks that the three events where
-! y = 0.5 in the interval 0 <= t <= 5*pi/2 are detected.
+! The program checks:
+! - the value of the solution at t=5*pi/2, where the
+!   exact solution is 1.0;
+! - the three events where y = 0.5 in the interval 0 <= t <= 5*pi/2
+!   are detected;
+! - the iterpolated values at t=pi/3, t=pi/2 and t=3*pi/2 are
+!   sqrt(3)/2, 1 and -1, respectively.
 !
 
 program delay_oscillator_test

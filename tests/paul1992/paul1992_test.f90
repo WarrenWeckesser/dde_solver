@@ -1,5 +1,5 @@
 !
-! paul1992_demo.f90
+! paul1992_test.f90
 !
 ! Fortran 90 program that will use DDE_SOLVER_M to solve the DDEs defined
 ! in the vector field: paul1992

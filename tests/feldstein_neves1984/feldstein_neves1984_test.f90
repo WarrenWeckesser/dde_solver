@@ -1,5 +1,5 @@
 !
-! feldstein_neves1984_demo.f90
+! feldstein_neves1984_test.f90
 !
 ! Fortran 90 program that will use DDE_SOLVER_M to solve the DDEs defined
 ! in the vector field: feldstein_neves1984
